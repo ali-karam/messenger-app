@@ -1,17 +1,13 @@
 const mongoose = require('mongoose');
 
+const DB_NAME = 
+    process.env.NODE_ENV === 'test' ? 'messengerAppTest' : 'messengerApp';
+
 mongoose
-    .connect("mongodb://localhost:27017/messengerApp", {
+    .connect(`mongodb://localhost:27017/${DB_NAME}`, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true
-    })
-    .then(() => {
-        console.log("Mongo connection open");
-    })
-    .catch((err) => {
-        console.log("Mongo connection error");
-        console.log(err);
     });
 
 module.exports.User = require('./user');
