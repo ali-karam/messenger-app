@@ -30,7 +30,7 @@ exports.register = async function(req, res, next) {
 
 exports.login = async function(req, res, next) {
     try {
-        const user = await db.User.findOne({ username: req.body.username });
+        const user = await db.User.findOne({ email: req.body.email });
         const { username } = user;
         const isMatch = await user.comparePassword(req.body.password);
         if(isMatch) {
@@ -38,9 +38,9 @@ exports.login = async function(req, res, next) {
             saveToken(res, token);
             return res.status(200).json({ username, token });
         } else {
-            return next({status: 400, message: 'Invalid username/password'});
+            return next({status: 400, message: 'Invalid email/password'});
         }
     } catch(err) {
-        return next({status: 400, message: 'Invalid username/password'});
+        return next({status: 400, message: 'Invalid email/password'});
     }
 };

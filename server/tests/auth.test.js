@@ -74,7 +74,7 @@ describe('/POST login', () => {
         const response = await request(app)
             .post('/auth/login')
             .send({
-                username: userOne.username,
+                email: userOne.email,
                 password: userOne.password
             })
             .expect(200);
@@ -85,7 +85,7 @@ describe('/POST login', () => {
         await request(app)
             .post('/auth/login')
             .send({
-                username: 'bob',
+                email: 'bob@example.com',
                 password: '123456'
             })
             .expect(400);
@@ -95,17 +95,17 @@ describe('/POST login', () => {
         await request(app)
             .post('/auth/login')
             .send({
-                username: userOne.username,
+                email: userOne.email,
                 password: 'thisisnotmypass'
             })
             .expect(400);
     });
 
-    it('Should not log in a user with the wrong username', async () => {
+    it('Should not log in a user with the wrong email', async () => {
         await request(app)
             .post('/auth/login')
             .send({
-                username: 'test2',
+                email: 'test2@example.com',
                 password: userOne.password
             })
             .expect(400);
