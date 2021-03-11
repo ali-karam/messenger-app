@@ -16,7 +16,7 @@ saveToken = (res, token) => (
 exports.register = async function(req, res, next) {
     try {
         const user = await db.User.create(req.body);
-        const { username} = user;
+        const { username } = user;
         const token = generateToken(username);
         saveToken(res, token);
         return res.status(201).json({ username, token });
