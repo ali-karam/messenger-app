@@ -47,7 +47,7 @@ describe('/POST register', () => {
             })
             .expect(400);
         const numUsers = await db.User.countDocuments({
-            username: userOne.username
+            email: userOne.email
         });
         expect(numUsers).toBe(1);
     });
