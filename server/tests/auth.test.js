@@ -19,7 +19,7 @@ afterAll(async () => {
 
 describe('/POST register', () => {
     afterAll(async () => {
-        await db.User.deleteMany();
+        await db.User.findByIdAndDelete(userOneId);
     });
 
     it('Should register a new user and return a token', async () => {
@@ -66,7 +66,7 @@ describe('/POST register', () => {
 
 describe('/POST login', () => {
     afterAll(async () => {
-        await db.User.deleteMany();
+        await db.User.findByIdAndDelete(userOneId);
     });
 
     it('Should log in an existing user and return a token', async () => {
