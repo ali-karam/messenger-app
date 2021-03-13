@@ -19,7 +19,7 @@ exports.register = async function(req, res, next) {
         const { id } = user;
         const token = generateToken(id);
         saveToken(res, token);
-        return res.status(201).json({ id, token });
+        return res.status(201).json({ id });
     } catch(err) {
         if(err.code === 11000) {
             err.message = 'Sorry, that username and/or email is taken'
@@ -36,7 +36,7 @@ exports.login = async function(req, res, next) {
         if(isMatch) {
             const token = generateToken(id);
             saveToken(res, token);
-            return res.status(200).json({ id, token });
+            return res.status(200).json({ id });
         } else {
             return next({status: 400, message: 'Invalid email/password'});
         }
