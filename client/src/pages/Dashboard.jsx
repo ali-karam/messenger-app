@@ -8,11 +8,6 @@ import { useHistory } from "react-router-dom";
 export default function Dashboard() {
   const history = useHistory();
 
-  React.useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) history.push("/signup");
-  }, []);
-
   return (
     <>
       {/* For testing purposes right now, ignore styling */}
