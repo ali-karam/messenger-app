@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -14,6 +14,8 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from 'axios';
+import AuthContext from "../context/auth-context";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -118,34 +120,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// Login middleware placeholder
-function useLogin() {
-  const history = useHistory();
-
-  const login = async (email, password) => {
-    console.log(email, password);
-    const res = await fetch(
-      `/auth/login?email=${email}&password=${password}`
-    ).then(res => res.json());
-    localStorage.setItem("user", res.user);
-    localStorage.setItem("token", res.token);
-    history.push("/dashboard");
-  };
-  return login;
-}
-
 export default function Login() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
 
   const history = useHistory();
+  const authContext = useContext(AuthContext);
 
-  React.useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) history.push("/dashboard");
-  }, [history]);
-
-  const login = useLogin();
+  const login = (email, password) => {
+    axios.post('/auth/login', {email, password})
+      .then(res => {
+        authContext.login(res.data.id);
+        history.push("/dashboard");
+      }).catch(err => {
+        console.log(err);
+      });   
+  };
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") return;
@@ -175,7 +165,6 @@ export default function Login() {
                 Don't have an account?
               </Button>
               <Button
-                color="background"
                 className={classes.accBtn}
                 variant="contained"
               >
