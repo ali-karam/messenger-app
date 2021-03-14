@@ -125,15 +125,14 @@ export default function Register() {
   const history = useHistory();
   const authContext = useContext(AuthContext);
 
-  const register = (username, email, password) => {
-    axios.post('/auth/register', {username, email, password})
-      .then(res => {
-        authContext.login(res.data.id);
-        history.push("/dashboard");
-      }).catch(err => {
-        console.log(err);
-        setOpen(true);
-      });
+  const register = async (username, email, password) => {
+    try {
+      const res = await axios.post('/auth/register', {username, email, password});
+      authContext.login(res.data.id);
+      history.push("/dashboard");
+    } catch(err) {
+      setOpen(true);
+    }
   };
 
   const handleClose = (event, reason) => {
@@ -202,11 +201,12 @@ export default function Register() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={(values) => {
-                register(values.username, values.email, values.password);
+              onSubmit={ async (values, { setSubmitting }) => {
+                setSubmitting(true);
+                await register(values.username, values.email, values.password);
               }}
             >
-              {({ handleSubmit, handleChange, values, touched, errors }) => (
+              {({ handleSubmit, handleChange, isSubmitting, values, touched, errors }) => (
                 <form
                   onSubmit={handleSubmit}
                   className={classes.form}
@@ -282,6 +282,7 @@ export default function Register() {
                       size="large"
                       variant="contained"
                       color="primary"
+                      disabled={isSubmitting}
                       className={classes.submit}
                     >
                       Create
