@@ -1,28 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { theme } from "./themes/theme.js";
 // import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
-import { BrowserRouter, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import AuthContext from "./context/auth-context";
 
 import "./App.css";
 
 function App() {
-  const [loggedIn, setLoggedIn] = React.useState(localStorage.getItem("user"));
+  
+  const [userId, setUserId] = useState(null);
 
-  return (
-    <MuiThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
+  const login = (id) => {
+    setUserId(id);
+  };
+
+  let routes = (
+    <Switch>
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
+      <Route exact path="/">
+        <Redirect to="/signup" />
+      </Route>
+      <Route render={() => <h1>Page not found</h1>}/>
+    </Switch>
+  );
+
+  if(userId !== null) {
+    routes = (
+      <Switch>
         <Route path="/dashboard" component={Dashboard} />
         <Route exact path="/">
-          <Redirect to="/signup" />
+          <Redirect to="/dashboard" />
         </Route>
-      </BrowserRouter>
-    </MuiThemeProvider>
+        <Route render={() => <h1>Page not found</h1>}/>
+      </Switch>
+    );
+  }
+
+  return (
+    <AuthContext.Provider value={{userId, login}}>
+      <MuiThemeProvider theme={theme}>
+          <BrowserRouter>
+           {routes}
+          </BrowserRouter>
+      </MuiThemeProvider>
+    </AuthContext.Provider>
   );
 }
 
