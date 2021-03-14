@@ -195,19 +195,8 @@ export default function Login() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={({ email, password }, { setStatus, setSubmitting }) => {
-                setStatus();
-                login(email, password).then(
-                  () => {
-                    // useHistory push to chat
-                    console.log(email, password);
-                    return;
-                  },
-                  error => {
-                    setSubmitting(false);
-                    setStatus(error);
-                  }
-                );
+              onSubmit={(values) => {
+                login(values.email, values.password);
               }}
             >
               {({ handleSubmit, handleChange, values, touched, errors }) => (
