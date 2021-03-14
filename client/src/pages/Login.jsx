@@ -122,7 +122,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Login() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const history = useHistory();
   const authContext = useContext(AuthContext);
@@ -133,7 +133,7 @@ export default function Login() {
         authContext.login(res.data.id);
         history.push("/dashboard");
       }).catch(err => {
-        console.log(err);
+        setOpen(true);
       });   
   };
 
