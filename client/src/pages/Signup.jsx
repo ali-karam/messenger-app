@@ -186,6 +186,7 @@ export default function Register() {
             </Grid>
             <Formik
               initialValues={{
+                username: "",
                 email: "",
                 password: ""
               }}
