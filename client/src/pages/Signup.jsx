@@ -148,7 +148,7 @@ export default function Register() {
   React.useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) history.push("/dashboard");
-  }, []);
+  }, [history]);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -156,7 +156,7 @@ export default function Register() {
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
         <Box className={classes.overlay}>
           <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" />
+            <img width={67} src="/images/chatBubble.png" alt="Chat bubble"/>
             <Hidden smDown>
               <Typography className={classes.heroText}>
                 Converse with anyone with any language
@@ -173,7 +173,6 @@ export default function Register() {
                 Already have an account?
               </Button>
               <Button
-                color="background"
                 className={classes.accBtn}
                 variant="contained"
               >
@@ -243,7 +242,6 @@ export default function Register() {
                       </Typography>
                     }
                     fullWidth
-                    id="username"
                     margin="normal"
                     InputLabelProps={{
                       shrink: true
@@ -298,7 +296,6 @@ export default function Register() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
-                    type="password"
                   />
 
                   <Box textAlign="center">
