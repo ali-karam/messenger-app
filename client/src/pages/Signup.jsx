@@ -206,7 +206,7 @@ export default function Register() {
                 await register(values.username, values.email, values.password);
               }}
             >
-              {({ handleSubmit, handleChange, isSubmitting, values, touched, errors }) => (
+              {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, touched, errors }) => (
                 <form
                   onSubmit={handleSubmit}
                   className={classes.form}
@@ -232,6 +232,7 @@ export default function Register() {
                     error={touched.username && Boolean(errors.username)}
                     value={values.username}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                   <TextField
                     id="email"
@@ -252,6 +253,7 @@ export default function Register() {
                     error={touched.email && Boolean(errors.email)}
                     value={values.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                   <TextField
                     id="password"
@@ -274,6 +276,7 @@ export default function Register() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                   />
 
                   <Box textAlign="center">

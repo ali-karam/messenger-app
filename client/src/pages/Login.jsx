@@ -200,7 +200,7 @@ export default function Login() {
                 await login(values.email, values.password);
               }}
             >
-              {({ handleSubmit, handleChange, isSubmitting, values, touched, errors }) => (
+              {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, touched, errors }) => (
                 <form
                   onSubmit={handleSubmit}
                   className={classes.form}
@@ -222,6 +222,7 @@ export default function Login() {
                     error={touched.email && Boolean(errors.email)}
                     value={values.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                   <TextField
                     id="password"
@@ -249,6 +250,7 @@ export default function Login() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                   <Box textAlign="center">
                     <Button
