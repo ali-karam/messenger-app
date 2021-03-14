@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -14,6 +14,8 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from 'axios';
+import AuthContext from '../context/auth-context';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -116,39 +118,28 @@ const useStyles = makeStyles(theme => ({
   link: { textDecoration: "none", display: "flex", flexWrap: "nowrap" }
 }));
 
-function useRegister() {
-  const history = useHistory();
-
-  const login = async (username, email, password) => {
-    console.log(email, password);
-    const res = await fetch(
-      `/auth/signup?username=${username}&email=${email}&password=${password}`
-    ).then(res => res.json());
-    console.log(res);
-    localStorage.setItem("user", res.user);
-    localStorage.setItem("token", res.token);
-    history.push("/dashboard");
-  };
-  return login;
-}
-
 export default function Register() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
-  const register = useRegister();
+  const history = useHistory();
+  const authContext = useContext(AuthContext);
+
+  const register = (username, email, password) => {
+    axios.post('/auth/register', {username, email, password})
+      .then(res => {
+        authContext.login(res.data.id);
+        history.push("/dashboard");
+      }).catch(err => {
+        console.log(err);
+        setOpen(true);
+      });
+  };
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") return;
     setOpen(false);
   };
-
-  const history = useHistory();
-
-  React.useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) history.push("/dashboard");
-  }, [history]);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -210,22 +201,8 @@ export default function Register() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={(
-                { username, email, password },
-                { setStatus, setSubmitting }
-              ) => {
-                setStatus();
-                register(username, email, password).then(
-                  () => {
-                    // useHistory push to chat
-                    console.log(email, password);
-                    return;
-                  },
-                  error => {
-                    setSubmitting(false);
-                    setStatus(error);
-                  }
-                );
+              onSubmit={(values) => {
+                register(values.username, values.email, values.password);
               }}
             >
               {({ handleSubmit, handleChange, values, touched, errors }) => (
@@ -323,7 +300,7 @@ export default function Register() {
           open={open}
           autoHideDuration={6000}
           onClose={handleClose}
-          message="Email already exists"
+          message="Username and/or email already exists"
           action={
             <React.Fragment>
               <IconButton
