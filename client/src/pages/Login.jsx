@@ -127,14 +127,14 @@ export default function Login() {
   const history = useHistory();
   const authContext = useContext(AuthContext);
 
-  const login = (email, password) => {
-    axios.post('/auth/login', {email, password})
-      .then(res => {
-        authContext.login(res.data.id);
-        history.push("/dashboard");
-      }).catch(err => {
-        setOpen(true);
-      });   
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post('/auth/login', {email, password});
+      authContext.login(res.data.id);
+      history.push("/dashboard");
+    } catch(err) {
+      setOpen(true);
+    }
   };
 
   const handleClose = (event, reason) => {
@@ -195,11 +195,12 @@ export default function Login() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={(values) => {
-                login(values.email, values.password);
+              onSubmit={async (values, { setSubmitting }) => {
+                setSubmitting(true);
+                await login(values.email, values.password);
               }}
             >
-              {({ handleSubmit, handleChange, values, touched, errors }) => (
+              {({ handleSubmit, handleChange, isSubmitting, values, touched, errors }) => (
                 <form
                   onSubmit={handleSubmit}
                   className={classes.form}
@@ -249,13 +250,13 @@ export default function Login() {
                     value={values.password}
                     onChange={handleChange}
                   />
-
                   <Box textAlign="center">
                     <Button
                       type="submit"
                       size="large"
                       variant="contained"
                       color="primary"
+                      disabled={isSubmitting}
                       className={classes.submit}
                     >
                       Login
