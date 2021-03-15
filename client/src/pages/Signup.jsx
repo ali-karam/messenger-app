@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
   image: {
     backgroundImage: "url(./images/bg-img.png)",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
+    backgroundSize: "100% 100%",
     backgroundPosition: "center"
   },
   box: {
