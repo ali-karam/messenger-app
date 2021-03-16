@@ -19,16 +19,23 @@ The project is broken down into a client and server folder. The server uses Expr
 ## Usage
 
 To start the server in development mode:
+
 ```bash
 npm run dev
 ```
+
 To run tests on the server:
+
 ```bash
 npm test
 ```
+
 # Frontend Setup
 
 ## Installation
+
 * Install all dependencies in the client folder using `npm install`
+
 ## Usage
+
 * Start the application using `npm start`
