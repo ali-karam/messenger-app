@@ -49,3 +49,18 @@ exports.logout = function(req, res) {
     res.clearCookie('token');
     return res.status(200).send();
 };
+
+exports.validToken = async function(req, res, next) {
+    try {
+        const token = req.cookies.token;
+        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+            if(decoded) {
+                return res.status(200).json({ id: decoded.id, username: decoded.username });
+            } else {
+                return res.end();
+            }
+        })
+    } catch(err) {
+        return res.end();
+    }
+};
