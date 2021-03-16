@@ -22,7 +22,7 @@ describe('/POST register', () => {
         await db.User.findByIdAndDelete(userOneId);
     });
 
-    it('Should register a new user and return a token', async () => {
+    it('Should register a new user and return the id and username', async () => {
         const response = await request(app)
             .post('/auth/register')
             .send({
@@ -31,7 +31,10 @@ describe('/POST register', () => {
             .expect(201);
         const user = await db.User.findById(userOneId);
         expect(user).not.toBeNull();
-        expect(response.body.token).not.toBeNull();
+        expect(response.body).toMatchObject({
+            id: userOneId.toString(),
+            username: userOne.username.toLowerCase()
+        });
     });
 
     it('Should not store an unhashed password', async () => {
@@ -91,7 +94,7 @@ describe('/POST login', () => {
         await db.User.findByIdAndDelete(userOneId);
     });
 
-    it('Should log in an existing user and return a token', async () => {
+    it('Should log in an existing user and return the id and username', async () => {
         await new db.User(userOne).save();
         const response = await request(app)
             .post('/auth/login')
@@ -100,7 +103,10 @@ describe('/POST login', () => {
                 password: userOne.password
             })
             .expect(200);
-        expect(response.body.token).not.toBeNull();
+        expect(response.body).toMatchObject({
+            id: userOneId.toString(),
+            username: userOne.username.toLowerCase()
+        });
     });
 
     it('Should not log in a non-existing user', async () => {
