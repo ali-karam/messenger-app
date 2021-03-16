@@ -44,3 +44,8 @@ exports.login = async function(req, res, next) {
         return next({status: 400, message: 'Invalid email/password'});
     }
 };
+
+exports.logout = function(req, res) {
+    res.clearCookie('token');
+    return res.status(200).send();
+};
