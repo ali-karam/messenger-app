@@ -4,6 +4,7 @@ const request = require('supertest');
 const app = require('../app');
 const mongoose = require('mongoose');
 const db = require('../models');
+const jwt = require('jsonwebtoken');
 
 const userOneId = new mongoose.Types.ObjectId();
 const userOne = {
@@ -12,6 +13,10 @@ const userOne = {
     email: 'test@example.com',
     password: 'password'
 };
+const userOneToken = jwt.sign({ 
+    id: userOneId, 
+    username: userOne.username 
+}, process.env.SECRET_KEY);
 
 afterAll(async () => {
     await mongoose.connection.close();
@@ -137,5 +142,37 @@ describe('/POST login', () => {
                 password: userOne.password
             })
             .expect(400);
+    });
+});
+
+describe('/POST logout', () => {
+    it('Should return status 401 if a non-logged-in user tries to logout', async () => {
+        await request(app)
+            .post('/auth/logout')
+            .expect(401);
+    });
+    it('Should return status 200 if a logged-in user logs out', async () => {
+        const response = await request(app)
+            .post('/auth/logout')
+            .set('Cookie', `token=${userOneToken}`)
+            .expect(200);
+    });
+});
+
+describe('/POST validtoken', () => {
+    it('Should decode a valid token and return the username and id', async () => {
+        const response = await request(app)
+            .post('/auth/validtoken')
+            .set('Cookie', `token=${userOneToken}`);
+        expect(response.body).toMatchObject({
+            id: userOneId.toString(),
+            username: userOne.username
+        });
+    });
+    it('Should not decode an invalid token and return nothing', async () => {
+        const response = await request(app)
+            .post('/auth/validtoken')
+            .set('Cookie', 'token=invalidtoken');
+        expect(response.body).toMatchObject({});
     });
 });
