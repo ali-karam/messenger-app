@@ -40,7 +40,7 @@ function App() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
-      <ProtectedRoute path="/dashboard" component={Dashboard} user={user} />
+      <ProtectedRoute path="/dashboard" component={Dashboard} />
       <Route exact path="/">
         <Redirect to="/signup" />
       </Route>
