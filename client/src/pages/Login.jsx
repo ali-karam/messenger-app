@@ -130,7 +130,7 @@ export default function Login() {
   const login = async (email, password) => {
     try {
       const res = await axios.post('/auth/login', {email, password});
-      authContext.login(res.data.id);
+      authContext.login(res.data);
       history.push("/dashboard");
     } catch(err) {
       setOpen(true);
@@ -297,4 +297,4 @@ export default function Login() {
       </Grid>
     </Grid>
   );
-}
+};
