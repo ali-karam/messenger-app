@@ -52,6 +52,28 @@ describe('/POST register', () => {
         expect(numUsers).toBe(1);
     });
 
+    it('Should return that an existing username is taken', async () => {
+        const response = await request(app)
+            .post('/auth/register')
+            .send({
+                username: userOne.username,
+                email: 'bob@bob.com',
+                password: '123456'
+            });
+        expect(response.body.error.message).toContain('username');
+    });
+
+    it('Should return that an existing email is taken', async () => {
+        const response = await request(app)
+            .post('/auth/register')
+            .send({
+                username: 'bob',
+                email: userOne.email,
+                password: '123456'
+            });
+        expect(response.body.error.message).toContain('email');
+    });
+
     it('Should not register a user with a password less than 6 chars', async () => {
         await request(app)
             .post('/auth/register')

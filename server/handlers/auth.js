@@ -22,7 +22,11 @@ exports.register = async function(req, res, next) {
         return res.status(201).json({ id, username });
     } catch(err) {
         if(err.code === 11000) {
-            err.message = 'Sorry, that username and/or email is taken'
+            if(err.message.search('email') !== -1) {
+                err.message = 'Sorry that email is taken';
+            } else {
+                err.message = 'Sorry that username is taken';
+            }
         }
         return next({status: 400, message: err.message});
     }
