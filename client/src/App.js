@@ -21,7 +21,7 @@ function App() {
     axios.post('/auth/validtoken')
       .then(res => {
         if(res.data) {
-          login(res.data);
+          setUser(res.data);
           history.replace('/dashboard');
         }
         setIsLoading(false);
@@ -31,10 +31,6 @@ function App() {
         setIsLoading(false);
       });
   }, [history]);
-
-  const login = (user) => {
-    setUser(user);
-  };
 
   let routes = (
     <Switch>
@@ -52,7 +48,7 @@ function App() {
   }
 
   return (
-    <AuthContext.Provider value={{user: user, login}}>
+    <AuthContext.Provider value={{user: user, login: setUser}}>
       <MuiThemeProvider theme={theme}>
         {routes}
         <ProtectedRoute/>
