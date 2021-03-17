@@ -142,6 +142,12 @@ export default function Login() {
     setOpen(false);
   };
 
+  const submissionHandler = async (values, setSubmitting) => {
+    setSubmitting(true);
+    await login(values.email, values.password);
+    setSubmitting(false);
+  };
+
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -195,10 +201,7 @@ export default function Login() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={async (values, { setSubmitting }) => {
-                setSubmitting(true);
-                await login(values.email, values.password);
-              }}
+              onSubmit={(values, {setSubmitting}) => {submissionHandler(values, setSubmitting)}}
             >
               {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, touched, errors }) => (
                 <form

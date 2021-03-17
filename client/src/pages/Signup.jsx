@@ -140,6 +140,13 @@ export default function Register() {
     setOpen(false);
   };
 
+
+  const submissionHandler = async (values, setSubmitting) => {
+    setSubmitting(true);
+    await register(values.username, values.email, values.password);
+    setSubmitting(false);
+  };
+
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -201,10 +208,7 @@ export default function Register() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={ async (values, { setSubmitting }) => {
-                setSubmitting(true);
-                await register(values.username, values.email, values.password);
-              }}
+              onSubmit={(values, { setSubmitting }) => {submissionHandler(values, setSubmitting)}}
             >
               {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, touched, errors }) => (
                 <form
