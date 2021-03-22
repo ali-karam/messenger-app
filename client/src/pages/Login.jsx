@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
@@ -14,6 +14,8 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from 'axios';
+import AuthContext from "../context/auth-context";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -77,7 +79,7 @@ const useStyles = makeStyles(theme => ({
   image: {
     backgroundImage: "url(./images/bg-img.png)",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
+    backgroundSize: "100% 100%",
     backgroundPosition: "center"
   },
   box: {
@@ -118,38 +120,32 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// Login middleware placeholder
-function useLogin() {
-  const history = useHistory();
-
-  const login = async (email, password) => {
-    console.log(email, password);
-    const res = await fetch(
-      `/auth/login?email=${email}&password=${password}`
-    ).then(res => res.json());
-    localStorage.setItem("user", res.user);
-    localStorage.setItem("token", res.token);
-    history.push("/dashboard");
-  };
-  return login;
-}
-
 export default function Login() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const history = useHistory();
+  const authContext = useContext(AuthContext);
 
-  React.useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) history.push("/dashboard");
-  }, []);
-
-  const login = useLogin();
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post('/auth/login', {email, password});
+      authContext.login(res.data);
+      history.push("/dashboard");
+    } catch(err) {
+      setOpen(true);
+    }
+  };
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") return;
     setOpen(false);
+  };
+
+  const submissionHandler = async (values, setSubmitting) => {
+    setSubmitting(true);
+    await login(values.email, values.password);
+    setSubmitting(false);
   };
 
   return (
@@ -158,7 +154,7 @@ export default function Login() {
       <Grid item xs={false} sm={4} md={5} className={classes.image}>
         <Box className={classes.overlay}>
           <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" />
+            <img width={67} src="/images/chatBubble.png" alt="Chat bubble"/>
             <Hidden smDown>
               <p className={classes.heroText}>
                 Converse with anyone with any language
@@ -175,7 +171,6 @@ export default function Login() {
                 Don't have an account?
               </Button>
               <Button
-                color="background"
                 className={classes.accBtn}
                 variant="contained"
               >
@@ -206,22 +201,9 @@ export default function Login() {
                   .max(100, "Password is too long")
                   .min(6, "Password too short")
               })}
-              onSubmit={({ email, password }, { setStatus, setSubmitting }) => {
-                setStatus();
-                login(email, password).then(
-                  () => {
-                    // useHistory push to chat
-                    console.log(email, password);
-                    return;
-                  },
-                  error => {
-                    setSubmitting(false);
-                    setStatus(error);
-                  }
-                );
-              }}
+              onSubmit={(values, {setSubmitting}) => {submissionHandler(values, setSubmitting)}}
             >
-              {({ handleSubmit, handleChange, values, touched, errors }) => (
+              {({ handleSubmit, handleChange, handleBlur, isSubmitting, values, touched, errors }) => (
                 <form
                   onSubmit={handleSubmit}
                   className={classes.form}
@@ -243,6 +225,7 @@ export default function Login() {
                     error={touched.email && Boolean(errors.email)}
                     value={values.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                   <TextField
                     id="password"
@@ -270,15 +253,15 @@ export default function Login() {
                     error={touched.password && Boolean(errors.password)}
                     value={values.password}
                     onChange={handleChange}
-                    type="password"
+                    onBlur={handleBlur}
                   />
-
                   <Box textAlign="center">
                     <Button
                       type="submit"
                       size="large"
                       variant="contained"
                       color="primary"
+                      disabled={isSubmitting}
                       className={classes.submit}
                     >
                       Login
@@ -317,4 +300,4 @@ export default function Login() {
       </Grid>
     </Grid>
   );
-}
+};
