@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MuiThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider, LinearProgress } from "@material-ui/core";
 import { theme } from "./themes/theme.js";
 // import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import { Route, Redirect, Switch, useHistory } from "react-router-dom";
@@ -42,7 +42,7 @@ function App() {
     </Switch>
   );
   if(isLoading) {
-    routes = <div></div>
+    routes = <LinearProgress />
   }
 
   return (
