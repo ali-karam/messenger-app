@@ -1,14 +1,13 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import CloseIcon from "@material-ui/icons/Close";
-import { Box, Button, CssBaseline, Paper, Hidden, Snackbar, Grid, IconButton, 
-  Typography } from '@material-ui/core';
+import { Box, Button, CssBaseline, Paper, Hidden, Grid, Typography } from '@material-ui/core';
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import axios from 'axios';
 import AuthContext from '../../context/auth-context';
 import authStyle from './AuthStyle';
 import ValidatedTextField from '../Form/ValidatedTextField/ValidatedTextField';
+import PopupMessage from '../Form/PopupMessage/PopupMessage';
 
 const Auth = () => {
   const classes = authStyle();
@@ -170,28 +169,7 @@ const Auth = () => {
           </Box>
           <Box p={1} alignSelf="center" />
         </Box>
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center"
-          }}
-          open={open}
-          autoHideDuration={6000}
-          onClose={handleClose}
-          message={errorMsg}
-          action={
-            <React.Fragment>
-              <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleClose}
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </React.Fragment>
-          }
-        />
+        <PopupMessage open={open} handleClose={handleClose} message={errorMsg} />
       </Grid>
     </Grid>
   );
