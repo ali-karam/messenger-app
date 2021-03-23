@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { Box, Button, CssBaseline, Paper, Grid, Typography } from '@material-ui/core';
 import { Formik, Form } from "formik";
@@ -18,6 +18,7 @@ const Auth = () => {
 
   const history = useHistory();
   const authContext = useContext(AuthContext);
+  const resetFormBtnRef = useRef(null);
 
   let validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -50,6 +51,7 @@ const Auth = () => {
 
   const switchAuthModeHandler = () => {
     setIsLoginPage(prevState => !prevState);
+    resetFormBtnRef.current.click();
   };
 
   const register = async (username, email, password) => {
@@ -103,16 +105,16 @@ const Auth = () => {
       <Grid item xs={12} sm={8} md={7} elevation={6} component={Paper} square>
         <Box className={classes.buttonHeader}>
           <Box p={1} alignSelf="flex-end" alignItems="center">
-              <Button className={classes.noAccBtn} onClick={switchAuthModeHandler}>
-                {isLoginPage ? "Don't have an account?" : "Already have an account?"}
-              </Button>
-              <Button
-                className={classes.accBtn}
-                variant="contained"
-                onClick={switchAuthModeHandler}
-              >
-                {isLoginPage ? "Create account" : "Login" }
-              </Button>
+            <Button className={classes.noAccBtn} onClick={switchAuthModeHandler}>
+              {isLoginPage ? "Don't have an account?" : "Already have an account?"}
+            </Button>
+            <Button
+              className={classes.accBtn}
+              variant="contained"
+              onClick={switchAuthModeHandler}
+            >
+              {isLoginPage ? "Create account" : "Login" }
+            </Button>
           </Box>
 
           <Box width="100%" maxWidth={450} p={3} alignSelf="center">
@@ -135,11 +137,22 @@ const Auth = () => {
               validationSchema={validationSchema}
               onSubmit={(values, { setSubmitting }) => { submissionHandler(values, setSubmitting) }}
             > 
-              {({ isSubmitting }) => (
+              {({ isSubmitting, handleReset }) => (
                 <Form className={classes.form}>
                   {usernameField}
-                  <ValidatedTextField name="email" label="E-mail address" autoComplete="email"/>
-                  <ValidatedTextField name="password" label="Password" type="password" autoComplete="current-password" forgotOption={isLoginPage}/>
+                  <ValidatedTextField 
+                    name="email" 
+                    label="E-mail address" 
+                    autoComplete="email"
+                    autoFocus={isLoginPage}
+                  />
+                  <ValidatedTextField 
+                    name="password" 
+                    label="Password" 
+                    type="password" 
+                    autoComplete="current-password" 
+                    forgotOption={isLoginPage}
+                  />
                   <Box textAlign="center">
                     <Button
                       type="submit"
@@ -151,8 +164,8 @@ const Auth = () => {
                     >
                       {isLoginPage ? "Login" : "Create"}
                     </Button>
+                    <button style={{display: "none"}} onClick={handleReset} ref={resetFormBtnRef}/>
                   </Box>
-                  {isLoginPage ? <div style={{ height: 95 }} /> : null} 
                 </Form>
               )}
             </Formik>
