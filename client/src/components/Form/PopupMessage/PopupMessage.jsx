@@ -1,9 +1,10 @@
-import React from 'react';
-import { Snackbar, IconButton, } from '@material-ui/core';
+import React from "react";
+import { Snackbar, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import Alert from "@material-ui/lab/Alert"
 
 const PopupMessage = ({open, handleClose, message}) => (
-    <Snackbar
+  <Snackbar
     anchorOrigin={{
       vertical: "bottom",
       horizontal: "center"
@@ -11,7 +12,6 @@ const PopupMessage = ({open, handleClose, message}) => (
     open={open}
     autoHideDuration={6000}
     onClose={handleClose}
-    message={message}
     action={
       <React.Fragment>
         <IconButton
@@ -24,7 +24,9 @@ const PopupMessage = ({open, handleClose, message}) => (
         </IconButton>
       </React.Fragment>
     }
-  />
+  >
+    <Alert variant="filled" onClose={handleClose} severity="error">{message}</Alert>
+  </Snackbar>
 );
 
 export default PopupMessage;
