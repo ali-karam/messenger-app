@@ -4,8 +4,7 @@ import { theme } from "./themes/theme.js";
 // import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
+import Auth from './components/Auth/Auth';
 import Dashboard from "./components/Dashboard";
 import AuthContext from "./context/auth-context";
 import ProtectedRoute from "./hoc/ProtectedRoute";
@@ -27,18 +26,17 @@ function App() {
         setIsLoading(false);
       })
       .catch(err => {
-        history.replace('/login');
+        history.replace('/auth');
         setIsLoading(false);
       });
   }, [history]);
 
   let routes = (
     <Switch>
-      <Route path="/login" component={Login} />
-      <Route path="/signup" component={Signup} />
+      <Route path="/auth" component={Auth} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
       <Route exact path="/">
-        <Redirect to="/signup" />
+        <Redirect to="/auth" />
       </Route>
       <Route render={() => <h1>Page not found</h1>}/>
     </Switch>
