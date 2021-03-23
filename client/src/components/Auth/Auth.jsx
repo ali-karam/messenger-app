@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { Box, Button, CssBaseline, Paper, Hidden, Grid, Typography } from '@material-ui/core';
+import { Box, Button, CssBaseline, Paper, Grid, Typography } from '@material-ui/core';
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import axios from 'axios';
@@ -8,6 +8,7 @@ import AuthContext from '../../context/auth-context';
 import authStyle from './AuthStyle';
 import ValidatedTextField from '../Form/ValidatedTextField/ValidatedTextField';
 import PopupMessage from '../Form/PopupMessage/PopupMessage';
+import ImageOverlay from '../Form/ImageOverlay/ImageOverlay';
 
 const Auth = () => {
   const classes = authStyle();
@@ -98,18 +99,7 @@ const Auth = () => {
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
-      <Grid item xs={false} sm={4} md={5} className={classes.image}>
-        <Box className={classes.overlay}>
-          <Hidden xsDown>
-            <img width={67} src="/images/chatBubble.png" alt="Chat bubble"/>
-            <Hidden smDown>
-              <Typography className={classes.heroText}> 
-                Converse with anyone with any language
-              </Typography>
-            </Hidden>
-          </Hidden>
-        </Box>
-      </Grid>
+      <ImageOverlay />
       <Grid item xs={12} sm={8} md={7} elevation={6} component={Paper} square>
         <Box className={classes.buttonHeader}>
           <Box p={1} alignSelf="flex-end" alignItems="center">
