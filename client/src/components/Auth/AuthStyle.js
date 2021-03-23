@@ -10,29 +10,7 @@ const authStyle = makeStyles(theme => ({
     welcome: {
       fontSize: 26,
       paddingBottom: 20,
-      color: "#000000",
-      fontWeight: 700,
-      fontFamily: "'Open Sans'"
-    },
-    heroText: {
-      fontSize: 26,
-      fontFamily: "'Open Sans'",
-      textAlign: "center",
-      color: "white",
-      marginTop: 30,
-      maxWidth: 300
-    },
-    overlay: {
-      backgroundImage:
-        "linear-gradient(180deg, rgb(58,141,255, 0.75) 0%, rgb(134,185,255, 0.75) 100%)",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      flexDirection: "column",
-      minHeight: "100vh",
-      paddingBottom: 145,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
+      color: "#000000"
     },
     buttonHeader: {
       display: "flex",
@@ -44,6 +22,7 @@ const authStyle = makeStyles(theme => ({
       paddingTop: 23
     },
     accBtn: {
+      fontSize: 14,
       width: 170,
       height: 54,
       borderRadius: 5,
@@ -51,21 +30,17 @@ const authStyle = makeStyles(theme => ({
       backgroundColor: "#ffffff",
       color: "#3a8dff",
       boxShadow: "none",
-      marginRight: 35
+      marginRight: 35,
+      textTransform: "none",
+      fontWeight: "bold"
     },
     noAccBtn: {
       fontSize: 14,
       color: "#b0b0b0",
-      fontWeight: 400,
       textAlign: "center",
       marginRight: 21,
-      whiteSpace: "nowrap"
-    },
-    image: {
-      backgroundImage: "url(./images/bg-img.png)",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "100% 100%",
-      backgroundPosition: "center"
+      whiteSpace: "nowrap",
+      textTransform: "none",
     },
     box: {
       padding: 24,
@@ -81,7 +56,6 @@ const authStyle = makeStyles(theme => ({
       width: "100%", // Fix IE 11 issue.
       marginTop: theme.spacing(1)
     },
-    label: { fontSize: 19, color: "rgb(0,0,0,0.4)", paddingLeft: "5px" },
     submit: {
       margin: theme.spacing(3, 2, 2),
       padding: 10,
@@ -91,14 +65,9 @@ const authStyle = makeStyles(theme => ({
       marginTop: 49,
       fontSize: 16,
       backgroundColor: "#3a8dff",
-      fontWeight: "bold"
-    },
-    inputs: {
-      marginTop: ".8rem",
-      height: "2rem",
-      padding: "5px"
-    },
-    link: { textDecoration: "none", display: "flex", flexWrap: "nowrap" }
+      fontWeight: "bold",
+      textTransform: "none"
+    }
   }));
 
 export default authStyle;
