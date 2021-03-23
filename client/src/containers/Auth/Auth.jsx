@@ -6,9 +6,9 @@ import * as Yup from "yup";
 import axios from 'axios';
 import AuthContext from '../../context/auth-context';
 import authStyle from './AuthStyle';
-import ValidatedTextField from '../Form/ValidatedTextField/ValidatedTextField';
-import PopupMessage from '../Form/PopupMessage/PopupMessage';
-import ImageOverlay from '../Form/ImageOverlay/ImageOverlay';
+import ValidatedTextField from '../../components/Form/ValidatedTextField/ValidatedTextField';
+import PopupMessage from '../../components/Form/PopupMessage/PopupMessage';
+import ImageOverlay from '../../components/Form/ImageOverlay/ImageOverlay';
 
 const Auth = () => {
   const classes = authStyle();

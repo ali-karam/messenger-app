@@ -4,7 +4,7 @@ import { theme } from "./themes/theme.js";
 // import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
-import Auth from './components/Auth/Auth';
+import Auth from "./containers/Auth/Auth";
 import Dashboard from "./components/Dashboard";
 import AuthContext from "./context/auth-context";
 import ProtectedRoute from "./hoc/ProtectedRoute";
