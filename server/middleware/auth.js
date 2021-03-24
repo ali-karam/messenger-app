@@ -5,6 +5,7 @@ exports.loginRequired = function(req, res, next) {
         const token = req.cookies.token;
         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
             if(decoded) {
+                req.user = decoded.id;
                 return next();
             } else {
                 return next({ status: 401, message: 'Please log in first'});
