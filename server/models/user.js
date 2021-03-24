@@ -59,7 +59,7 @@ userSchema.methods.comparePassword = async function(candidatePassword, next) {
 
 userSchema.methods.findOtherUsersByUsername = async function(queryUsername, page, limit, next) {
     try {
-        const options = { page, limit, select: 'username' }
+        const options = { page, limit, select: 'username avatar' }
         const regex = new RegExp(queryUsername, 'i');
         const query = { $and: [
             { username: { $regex: regex } },
