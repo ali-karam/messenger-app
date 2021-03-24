@@ -7,6 +7,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 require("./models");
 
 const authRouter = require("./routes/auth");
+const userRouter = require("./routes/users");
 
 const { json, urlencoded } = express;
 
@@ -20,6 +21,7 @@ app.use(express.static(join(__dirname, "public")));
 app.use(mongoSanitize());
 
 app.use("/auth", authRouter);
+app.use("/users", userRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
