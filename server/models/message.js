@@ -7,7 +7,10 @@ const messageSchmea = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         required: true
     },
-    read: Boolean
+    read: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 const Message = mongoose.model('Message', messageSchmea);

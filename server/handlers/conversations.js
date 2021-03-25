@@ -22,13 +22,14 @@ exports.startConversation = async function(req, res, next) {
 
 exports.getAllConversations = async function(req, res, next) {
     try {
-        const populateOptions = {
+        const populateUser = {
             path: 'users', 
             select: 'username',  
             match: { _id : { $ne : req.user } }
         };
         const conversations = await db.Conversation.find({ users: req.user })
-            .populate(populateOptions)
+            .populate(populateUser)
+            .populate('lastMessage', 'message creator read')
             .sort({ updatedAt: 'desc' });
         res.status(200).json({ conversations });
     } catch(err) {
@@ -39,6 +40,8 @@ exports.getAllConversations = async function(req, res, next) {
 exports.getConversation = async function(req, res, next) {
     try {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
+        
+        await db.Message.updateMany({ conversation }, { read: true });
         const messages = await db.Message.find({ conversation })
             .populate('creator', 'username');
         res.status(200).json({ messages });
@@ -64,6 +67,7 @@ exports.sendMessage = async function(req, res, next) {
             path: 'creator',
             select: 'username'
         });
+        await db.Conversation.findByIdAndUpdate(conversation, { lastMessage: newMessage });
         res.status(201).json({ newMessage });
     } catch(err) {
         return next({status: 400, message: err.message});
