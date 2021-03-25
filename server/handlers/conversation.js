@@ -29,3 +29,14 @@ exports.getAllConversations = async function(req, res, next) {
         return next({status: 400, message: err.message});
     }
 };
+
+exports.getConversation = async function(req, res, next) {
+    try {
+        const conversation = await db.Conversation.findById(req.params.id)
+            .populate('users', 'username');
+
+        res.status(200).json({ conversation });
+    } catch(err) {
+        return next({status: 400, message: err.message});
+    }
+};
