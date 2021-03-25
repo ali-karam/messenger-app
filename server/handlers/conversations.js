@@ -53,3 +53,32 @@ exports.getConversation = async function(req, res, next) {
         return next({status: 400, message: err.message});
     }
 };
+
+exports.sendMessage = async function(req, res, next) {
+    try {
+        const query = {
+            _id: req.params.id,
+            users: {
+                _id: req.user
+            }
+        };
+        const conversation = await db.Conversation.findOne(query);
+        const creator = req.user;
+        const message = req.body.message;
+        if(!conversation) {
+            throw new Error('Conversation does not exist');
+        }
+        if(!message || (typeof message === 'string' && !message.trim())) {
+            throw new Error('Message cannot be empty');
+        }
+
+        let newMessage = await db.Message.create({ conversation, creator, message });
+        newMessage = await db.Message.populate(newMessage, {
+            path: 'creator',
+            select: 'username'
+        });
+        res.status(201).json({ newMessage });
+    } catch(err) {
+        return next({status: 400, message: err.message});
+    }
+};

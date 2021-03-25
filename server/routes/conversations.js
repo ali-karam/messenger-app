@@ -1,11 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
-const { startConversation, getAllConversations, getConversation } = require('../handlers/conversations');
+const { 
+    startConversation, 
+    getAllConversations, 
+    getConversation, 
+    sendMessage 
+} = require('../handlers/conversations');
 
 router.route('/')
     .post(startConversation)
     .get(getAllConversations);
-router.get('/:id', getConversation);
+router.route('/:id')
+    .get(getConversation)
+    .post(sendMessage);
 
 module.exports = router;
