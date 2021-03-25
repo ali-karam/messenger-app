@@ -8,6 +8,7 @@ require("./models");
 
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/users");
+const conversationRouter = require("./routes/conversation");
 
 const { json, urlencoded } = express;
 
@@ -22,6 +23,7 @@ app.use(mongoSanitize());
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/conversation", conversationRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
