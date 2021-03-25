@@ -12,3 +12,4 @@ mongoose
 
 module.exports.User = require('./user');
 module.exports.Conversation = require('./conversation');
+module.exports.Message = require('./message');
