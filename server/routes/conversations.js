@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { startConversation, getAllConversations, getConversation } = require('../handlers/conversation');
+const { startConversation, getAllConversations, getConversation } = require('../handlers/conversations');
 
 router.route('/')
     .post(startConversation)
