@@ -1,13 +1,5 @@
 const db = require('../models');
 
-const configOptions = (user) => { 
-    return {
-        path: 'users', 
-        select: 'username',  
-        match: { _id : { $ne : user } }
-    }
-};
-
 exports.startConversation = async function(req, res, next) {
     try {
         const currentUser = await db.User.findById(req.user);
@@ -19,9 +11,10 @@ exports.startConversation = async function(req, res, next) {
         if(currentUser._id.equals(otherUser._id)) {
             throw new Error('You cannot start a conversation with yourself');
         }
-        let conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
-        conversation = await db.Conversation.populate(conversation, configOptions(req.user));
-        res.status(201).json({ conversation });
+        const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
+        const messages = await db.Message.find({ conversation })
+            .populate('creator', 'username');
+        res.status(201).json({ messages, conversation: conversation._id });
     } catch(err) {
         return next({status: 400, message: err.message});
     }
@@ -29,8 +22,13 @@ exports.startConversation = async function(req, res, next) {
 
 exports.getAllConversations = async function(req, res, next) {
     try {
+        const populateOptions = {
+            path: 'users', 
+            select: 'username',  
+            match: { _id : { $ne : req.user } }
+        };
         const conversations = await db.Conversation.find({ users: req.user })
-            .populate(configOptions(req.user))
+            .populate(populateOptions)
             .sort({ updatedAt: 'desc' });
         res.status(200).json({ conversations });
     } catch(err) {
@@ -40,9 +38,10 @@ exports.getAllConversations = async function(req, res, next) {
 
 exports.getConversation = async function(req, res, next) {
     try {
-        let conversation = await db.Conversation.findConversation(req.params.id, req.user);
-        conversation = await db.Conversation.populate(conversation, configOptions(req.user));
-        res.status(200).json({ conversation });
+        const conversation = await db.Conversation.findConversation(req.params.id, req.user);
+        const messages = await db.Message.find({ conversation })
+            .populate('creator', 'username');
+        res.status(200).json({ messages });
     } catch(err) {
         return next({status: 400, message: err.message});
     }
