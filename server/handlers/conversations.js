@@ -41,7 +41,13 @@ exports.getAllConversations = async function(req, res, next) {
 
 exports.getConversation = async function(req, res, next) {
     try {
-        const conversation = await db.Conversation.findById(req.params.id)
+        const query = {
+            _id: req.params.id,
+            users: {
+                _id: req.user
+            }
+        };
+        const conversation = await db.Conversation.findOne(query)
             .populate(configOptions(req.user));
         res.status(200).json({ conversation });
     } catch(err) {
