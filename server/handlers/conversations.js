@@ -29,8 +29,7 @@ exports.startConversation = async function(req, res, next) {
 
 exports.getAllConversations = async function(req, res, next) {
     try {
-        const currentUser = await db.User.findById(req.user);
-        const conversations = await db.Conversation.find({ users: currentUser })
+        const conversations = await db.Conversation.find({ users: req.user })
             .populate(configOptions(req.user))
             .sort({ updatedAt: 'desc' });
         res.status(200).json({ conversations });
