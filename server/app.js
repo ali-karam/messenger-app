@@ -4,6 +4,7 @@ const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoSanitize = require("express-mongo-sanitize");
+const { loginRequired } = require('./middleware/auth');
 require("./models");
 
 const authRouter = require("./routes/auth");
@@ -22,8 +23,8 @@ app.use(express.static(join(__dirname, "public")));
 app.use(mongoSanitize());
 
 app.use("/auth", authRouter);
-app.use("/users", userRouter);
-app.use("/conversation", conversationRouter);
+app.use("/users", loginRequired, userRouter);
+app.use("/conversation", loginRequired, conversationRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
