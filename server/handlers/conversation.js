@@ -12,7 +12,19 @@ exports.startConversation = async function(req, res, next) {
             throw new Error('You cannot start a conversation with yourself');
         }
         const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
-        res.status(200).json({ conversation });
+        res.status(201).json({ conversation });
+    } catch(err) {
+        return next({status: 400, message: err.message});
+    }
+};
+
+exports.getAllConversations = async function(req, res, next) {
+    try {
+        const currentUser = await db.User.findById(req.user);
+        const conversations = await db.Conversation.find({ users: currentUser })
+            .populate('users', 'username');
+
+        res.status(200).json({ conversations });
     } catch(err) {
         return next({status: 400, message: err.message});
     }
