@@ -23,6 +23,20 @@ conversationSchema.statics.initiateConversation = async function(currentUser, ot
     }
 };
 
+conversationSchema.statics.findConversation = async function(convoId, userId,next) {
+    try {
+        const conversation = await Conversation.findOne({
+            _id: convoId,
+            users: {
+                _id: userId
+            }
+        });
+        return conversation;
+    } catch(err) {
+        return next(err);
+    }
+};
+
 const Conversation = mongoose.model('Conversation', conversationSchema);
 
 module.exports = Conversation;

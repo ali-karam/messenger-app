@@ -40,14 +40,8 @@ exports.getAllConversations = async function(req, res, next) {
 
 exports.getConversation = async function(req, res, next) {
     try {
-        const query = {
-            _id: req.params.id,
-            users: {
-                _id: req.user
-            }
-        };
-        const conversation = await db.Conversation.findOne(query)
-            .populate(configOptions(req.user));
+        let conversation = await db.Conversation.findConversation(req.params.id, req.user);
+        conversation = await db.Conversation.populate(conversation, configOptions(req.user));
         res.status(200).json({ conversation });
     } catch(err) {
         return next({status: 400, message: err.message});
@@ -56,13 +50,7 @@ exports.getConversation = async function(req, res, next) {
 
 exports.sendMessage = async function(req, res, next) {
     try {
-        const query = {
-            _id: req.params.id,
-            users: {
-                _id: req.user
-            }
-        };
-        const conversation = await db.Conversation.findOne(query);
+        const conversation = await db.Conversation.findConversation(req.params.id, req.user);
         const creator = req.user;
         const message = req.body.message;
         if(!conversation) {
