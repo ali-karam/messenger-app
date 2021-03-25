@@ -5,36 +5,28 @@ const conversationSchema = new mongoose.Schema({
     lastMessage: {type: mongoose.Schema.Types.ObjectId, ref: 'Message'}
 }, { timestamps: true });
 
-conversationSchema.statics.initiateConversation = async function(currentUser, otherUser, next) {
-    try {
-        const existingConvo = await Conversation.findOne({
-            users: { $all: [currentUser._id, otherUser._id] }
-        });
-        
-        if(existingConvo) {
-            return existingConvo;
-        }
-        const newConvo = new Conversation();
-        newConvo.users.push(currentUser, otherUser);
-        await newConvo.save();
-        return newConvo;
-    } catch(err) {
-        return next(err);
+conversationSchema.statics.initiateConversation = async function(currentUser, otherUser) {
+    const existingConvo = await Conversation.findOne({
+        users: { $all: [currentUser._id, otherUser._id] }
+    });
+    
+    if(existingConvo) {
+        return existingConvo;
     }
+    const newConvo = new Conversation();
+    newConvo.users.push(currentUser, otherUser);
+    await newConvo.save();
+    return newConvo;
 };
 
-conversationSchema.statics.findConversation = async function(convoId, userId,next) {
-    try {
-        const conversation = await Conversation.findOne({
-            _id: convoId,
-            users: {
-                _id: userId
-            }
-        });
-        return conversation;
-    } catch(err) {
-        return next(err);
-    }
+conversationSchema.statics.findConversation = async function(convoId, userId) {
+    const conversation = await Conversation.findOne({
+        _id: convoId,
+        users: {
+            _id: userId
+        }
+    });
+    return conversation;
 };
 
 const Conversation = mongoose.model('Conversation', conversationSchema);
