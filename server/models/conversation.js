@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const conversationSchema = new mongoose.Schema({
-    users: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+    users: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    lastMessage: String
 }, { timestamps: true });
 
 conversationSchema.statics.initiateConversation = async function(currentUser, otherUser, next) {
