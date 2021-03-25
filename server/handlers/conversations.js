@@ -55,9 +55,7 @@ exports.sendMessage = async function(req, res, next) {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
         const creator = req.user;
         const message = req.body.message;
-        if(!conversation) {
-            throw new Error('Conversation does not exist');
-        }
+        
         if(!message || (typeof message === 'string' && !message.trim())) {
             throw new Error('Message cannot be empty');
         }

@@ -26,6 +26,9 @@ conversationSchema.statics.findConversation = async function(convoId, userId) {
             _id: userId
         }
     });
+    if(!conversation) {
+        throw new Error('Conversation does not exist');
+    }
     return conversation;
 };
 
