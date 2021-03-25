@@ -11,7 +11,10 @@ exports.startConversation = async function(req, res, next) {
         if(currentUser._id.equals(otherUser._id)) {
             throw new Error('You cannot start a conversation with yourself');
         }
-        const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
+        let conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
+        conversation = await db.Conversation.populate(conversation, {
+            path: 'users', select: 'username' 
+        });
         res.status(201).json({ conversation });
     } catch(err) {
         return next({status: 400, message: err.message});
