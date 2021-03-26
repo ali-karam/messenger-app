@@ -56,8 +56,11 @@ exports.sendMessage = async function(req, res, next) {
     try {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
         const creator = req.user;
-        const message = req.body.message;
+        let message = req.body.message;
 
+        if(req.file) {
+            message = req.file.buffer;
+        }
         if(!message || (typeof message === 'string' && !message.trim())) {
             throw new Error('Message cannot be empty');
         }

@@ -7,12 +7,13 @@ const {
     getConversation, 
     sendMessage 
 } = require('../handlers/conversations');
+const { upload } = require('../middleware/fileUpload');
 
 router.route('/')
     .post(startConversation)
     .get(getAllConversations);
 router.route('/:id')
     .get(getConversation)
-    .post(sendMessage);
+    .post(upload.single('message'), sendMessage);
 
 module.exports = router;
