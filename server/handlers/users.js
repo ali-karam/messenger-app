@@ -1,5 +1,4 @@
 const db = require('../models');
-const multer = require('multer');
 
 exports.findUser = async function(req, res, next) {
     try {
@@ -24,19 +23,7 @@ exports.getUser = async function(req, res, next) {
     }
 };
 
-exports.upload = multer({
-    limits: {
-        fileSize: 1000000
-    },
-    fileFilter(req, file, cb) {
-        if(!file.originalname.match(/\.(jpe?g|png)$/)) {
-            return cb('Please upload a jpg, jpeg, or png image');
-        }
-        cb(undefined, true);
-    }
-});
-
-exports.uploadAvatar = async function(req, res, next) {
+exports.updateUser = async function(req, res, next) {
     try {
         const user = await db.User.findById(req.params.id);
         user.avatar = req.file.buffer;
