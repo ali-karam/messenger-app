@@ -12,10 +12,13 @@ exports.startConversation = async function(req, res, next) {
             throw new Error('You cannot start a conversation with yourself');
         }
         const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
-        const messages = await db.Message.find({ conversation })
-            .populate('creator', 'username')
-            .sort({ createdAt: 'desc' });
-        res.status(201).json({ messages, conversation: conversation._id });
+
+        const result = await db.Message.findConvoMessages(conversation, 1, 15);
+        res.status(200).json({ 
+            messages: result.docs, 
+            hasNext: result.hasNextPage, 
+            conversation: conversation._id 
+        });
     } catch(err) {
         return next({status: 400, message: err.message});
     }
@@ -41,12 +44,13 @@ exports.getAllConversations = async function(req, res, next) {
 exports.getConversation = async function(req, res, next) {
     try {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
+        const limit = req.query.limit ? parseInt(req.query.limit) : 15;
+        const page = req.query.page ? parseInt(req.query.page) : 1;
         
         await db.Message.markMessagesRead(conversation, req.user);
-        const messages = await db.Message.find({ conversation })
-            .populate('creator', 'username')
-            .sort({ createdAt: 'desc' });
-        res.status(200).json({ messages });
+
+        const result = await db.Message.findConvoMessages(conversation, page, limit);
+        res.status(200).json({ messages: result.docs, hasNext: result.hasNextPage });
     } catch(err) {
         return next({status: 400, message: err.message});
     }
@@ -64,7 +68,6 @@ exports.sendMessage = async function(req, res, next) {
         if(!message || (typeof message === 'string' && !message.trim())) {
             throw new Error('Message cannot be empty');
         }
-
         let newMessage = await db.Message.create({ conversation, creator, message });
         newMessage = await db.Message.populate(newMessage, {
             path: 'creator',
