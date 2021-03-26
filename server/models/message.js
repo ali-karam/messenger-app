@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const messageSchmea = new mongoose.Schema({
+const messageSchema = new mongoose.Schema({
     conversation: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     message: {
@@ -13,6 +13,14 @@ const messageSchmea = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-const Message = mongoose.model('Message', messageSchmea);
+messageSchema.statics.markMessagesRead = async function(conversation, user) {
+    const query = {
+        conversation,
+        creator: {$ne: user}
+    };
+    await Message.updateMany(query, { read: true });
+};
+
+const Message = mongoose.model('Message', messageSchema);
 
 module.exports = Message;
