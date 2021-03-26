@@ -11,11 +11,11 @@ conversationSchema.statics.initiateConversation = async function(currentUser, ot
     });
     
     if(existingConvo) {
+        existingConvo.status = 200;
         return existingConvo;
     }
-    const newConvo = new Conversation();
-    newConvo.users.push(currentUser, otherUser);
-    await newConvo.save();
+    const newConvo = await Conversation.create({ users: [currentUser, otherUser] });
+    newConvo.status = 201;
     return newConvo;
 };
 

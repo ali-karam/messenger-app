@@ -13,10 +13,17 @@ exports.startConversation = async function(req, res, next) {
         }
         const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
 
-        const result = await db.Message.findConvoMessages(conversation, 1, 15);
-        res.status(200).json({ 
-            messages: result.docs, 
-            hasNext: result.hasNextPage, 
+        if(conversation.lastMessage) {
+            const result = await db.Message.findConvoMessages(conversation, 1, 15);
+            return res.status(200).json({ 
+                messages: result.docs, 
+                hasNext: result.hasNextPage, 
+                conversation: conversation._id 
+            });
+        }
+        res.status(conversation.status).json({ 
+            messages: [], 
+            hasNext: false, 
             conversation: conversation._id 
         });
     } catch(err) {
@@ -31,7 +38,8 @@ exports.getAllConversations = async function(req, res, next) {
             select: 'username',  
             match: { _id : { $ne : req.user } }
         };
-        const conversations = await db.Conversation.find({ users: req.user })
+        const conversations = await db.Conversation
+            .find({ users: req.user })
             .populate(populateUser)
             .populate('lastMessage', 'message creator read')
             .sort({ updatedAt: 'desc' });
