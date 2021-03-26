@@ -13,7 +13,8 @@ exports.startConversation = async function(req, res, next) {
         }
         const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
         const messages = await db.Message.find({ conversation })
-            .populate('creator', 'username');
+            .populate('creator', 'username')
+            .sort({ createdAt: 'desc' });
         res.status(201).json({ messages, conversation: conversation._id });
     } catch(err) {
         return next({status: 400, message: err.message});
@@ -41,9 +42,10 @@ exports.getConversation = async function(req, res, next) {
     try {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
         
-        await db.Message.updateMany({ conversation }, { read: true });
+        await db.Message.markMessagesRead(conversation, req.user);
         const messages = await db.Message.find({ conversation })
-            .populate('creator', 'username');
+            .populate('creator', 'username')
+            .sort({ createdAt: 'desc' });
         res.status(200).json({ messages });
     } catch(err) {
         return next({status: 400, message: err.message});
@@ -55,7 +57,7 @@ exports.sendMessage = async function(req, res, next) {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
         const creator = req.user;
         const message = req.body.message;
-        
+
         if(!message || (typeof message === 'string' && !message.trim())) {
             throw new Error('Message cannot be empty');
         }
@@ -65,7 +67,7 @@ exports.sendMessage = async function(req, res, next) {
             path: 'creator',
             select: 'username'
         });
-        await db.Conversation.findByIdAndUpdate(conversation, { lastMessage: newMessage });
+        await db.Conversation.updateOne(conversation, { lastMessage: newMessage });
         res.status(201).json({ newMessage });
     } catch(err) {
         return next({status: 400, message: err.message});
