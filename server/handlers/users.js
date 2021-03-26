@@ -1,4 +1,5 @@
 const db = require('../models');
+const multer = require('multer');
 
 exports.findUser = async function(req, res, next) {
     try {
@@ -8,6 +9,29 @@ exports.findUser = async function(req, res, next) {
         const currentUser = await db.User.findById(req.user);
         const result = await currentUser.findOtherUsersByUsername(req.query.username, page, limit);
         res.status(200).json({ users: result.docs, hasNext: result.hasNextPage });
+    } catch(err) {
+        return next({status: 400, message: err.message});
+    }
+};
+
+exports.upload = multer({
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if(!file.originalname.match(/\.(jpe?g|png)$/)) {
+            return cb('Please upload a jpg, jpeg, or png image');
+        }
+        cb(undefined, true);
+    }
+});
+
+exports.uploadAvatar = async function(req, res, next) {
+    try {
+        const user = await db.User.findById(req.params.id);
+        user.avatar = req.file.buffer;
+        await user.save();
+        res.send();
     } catch(err) {
         return next({status: 400, message: err.message});
     }
