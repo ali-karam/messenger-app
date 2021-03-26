@@ -14,6 +14,16 @@ exports.findUser = async function(req, res, next) {
     }
 };
 
+exports.getUser = async function(req, res, next) {
+    try {
+        const user = await db.User.findById(req.params.id);
+        const { username, avatar } = user;
+        return res.status(200).json({ username, avatar });
+    } catch(err) {
+        return next({status: 404, message: err.message});
+    }
+};
+
 exports.upload = multer({
     limits: {
         fileSize: 1000000
