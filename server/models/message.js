@@ -24,6 +24,16 @@ messageSchema.statics.markMessagesRead = async function(conversation, user) {
     await Message.updateMany(query, { read: true });
 };
 
+messageSchema.statics.countUnreadMessages = async function(conversation, user) {
+    const query = {
+        conversation,
+        read: false,
+        creator: {$ne: user}
+    };
+    const result = await Message.countDocuments(query);
+    return result;
+};
+
 messageSchema.statics.findConvoMessages = async function(conversation, page, limit) {
     const options = {
         page,

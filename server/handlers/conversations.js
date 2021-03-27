@@ -40,9 +40,14 @@ exports.getAllConversations = async function(req, res, next) {
         };
         const conversations = await db.Conversation
             .find({ users: req.user })
+            .lean()
             .populate(populateUser)
             .populate('lastMessage', 'message creator read')
             .sort({ updatedAt: 'desc' });
+            
+        for(conversation of conversations) {
+            conversation.numUnread = await db.Message.countUnreadMessages(conversation, req.user);
+        }
         res.status(200).json(conversations);
     } catch(err) {
         return next({status: 400, message: err.message});
