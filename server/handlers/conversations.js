@@ -46,7 +46,9 @@ exports.getAllConversations = async function(req, res, next) {
             .sort({ updatedAt: 'desc' });
             
         for(conversation of conversations) {
-            conversation.numUnread = await db.Message.countUnreadMessages(conversation, req.user);
+            if(conversation.lastMessage && !conversation.lastMessage.read) {
+                conversation.numUnread = await db.Message.countUnreadMessages(conversation, req.user);
+            }
         }
         res.status(200).json(conversations);
     } catch(err) {
