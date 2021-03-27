@@ -44,9 +44,9 @@ exports.getAllConversations = async function(req, res, next) {
             .populate(populateUser)
             .populate('lastMessage', 'message creator read')
             .sort({ updatedAt: 'desc' });
-            
         for(conversation of conversations) {
-            if(conversation.lastMessage && !conversation.lastMessage.read) {
+            const lastMessage = conversation.lastMessage;
+            if(lastMessage && !lastMessage.read && lastMessage.creator._id != req.user) {
                 conversation.numUnread = await db.Message.countUnreadMessages(conversation, req.user);
             }
         }
