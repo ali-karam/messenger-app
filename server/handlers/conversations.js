@@ -3,7 +3,7 @@ const db = require('../models');
 exports.startConversation = async function(req, res, next) {
     try {
         const currentUser = await db.User.findById(req.user);
-        const otherUser = await db.User.findOne({ username: req.body.username });
+        const otherUser = await db.User.findById(req.body.userId);
 
         if(!otherUser) {
             throw new Error('That user does not exist');
