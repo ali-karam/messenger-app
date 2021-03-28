@@ -12,20 +12,21 @@ exports.startConversation = async function(req, res, next) {
             throw new Error('You cannot start a conversation with yourself');
         }
         const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
-
+        const payload = {
+            messages: [],
+            hasNext: false,
+            conversationId: conversation._id,
+            otherUser: { 
+                username: otherUser.username,
+                avatar: otherUser.avatar
+            } 
+        };
         if(conversation.lastMessage) {
             const result = await db.Message.findConvoMessages(conversation, 1, 15);
-            return res.status(200).json({ 
-                messages: result.docs, 
-                hasNext: result.hasNextPage, 
-                conversation: conversation._id 
-            });
+            payload.messages = result.docs;
+            payload.hasNext = result.hasNextPage;
         }
-        res.status(conversation.status).json({ 
-            messages: [], 
-            hasNext: false, 
-            conversation: conversation._id 
-        });
+        res.status(conversation.status).json(payload);
     } catch(err) {
         return next({status: 400, message: err.message});
     }
@@ -59,13 +60,19 @@ exports.getAllConversations = async function(req, res, next) {
 exports.getConversation = async function(req, res, next) {
     try {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
+        const otherUser = conversation.users.find(user => user != req.user);
+        const { username, avatar } = await db.User.findById(otherUser);
         const limit = req.query.limit ? parseInt(req.query.limit) : 15;
         const page = req.query.page ? parseInt(req.query.page) : 1;
         
         await db.Message.markMessagesRead(conversation, req.user);
 
         const result = await db.Message.findConvoMessages(conversation, page, limit);
-        res.status(200).json({ messages: result.docs, hasNext: result.hasNextPage });
+        res.status(200).json({ 
+            messages: result.docs, 
+            hasNext: result.hasNextPage, 
+            otherUser: { username, avatar }
+        });
     } catch(err) {
         return next({status: 400, message: err.message});
     }
