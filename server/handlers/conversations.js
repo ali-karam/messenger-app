@@ -22,7 +22,7 @@ exports.startConversation = async function(req, res, next) {
             } 
         };
         if(conversation.lastMessage) {
-            const result = await db.Message.findConvoMessages(conversation, 1, 15);
+            const result = await db.Message.findConvoMessages(conversation, 1, 20);
             payload.messages = result.docs;
             payload.hasNext = result.hasNextPage;
         }
@@ -62,7 +62,7 @@ exports.getConversation = async function(req, res, next) {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
         const otherUser = conversation.users.find(user => user != req.user);
         const { username, avatar } = await db.User.findById(otherUser);
-        const limit = req.query.limit ? parseInt(req.query.limit) : 15;
+        const limit = req.query.limit ? parseInt(req.query.limit) : 20;
         const page = req.query.page ? parseInt(req.query.page) : 1;
         
         await db.Message.markMessagesRead(conversation, req.user);
