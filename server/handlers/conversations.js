@@ -34,24 +34,20 @@ exports.startConversation = async function(req, res, next) {
 
 exports.getAllConversations = async function(req, res, next) {
     try {
-        const populateUser = {
-            path: 'users', 
-            select: 'username avatar',  
-            match: { _id : { $ne : req.user } }
-        };
-        const conversations = await db.Conversation
-            .find({ users: req.user })
-            .lean()
-            .populate(populateUser)
-            .populate('lastMessage', 'message creator read')
-            .sort({ updatedAt: 'desc' });
-        for(conversation of conversations) {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 15;
+        const page = req.query.page ? parseInt(req.query.page) : 1;
+
+        const conversations = await db.Conversation.findConversations(req.user, page, limit);
+        for(conversation of conversations.docs) {
             const lastMessage = conversation.lastMessage;
             if(lastMessage && !lastMessage.read && lastMessage.creator._id != req.user) {
                 conversation.numUnread = await db.Message.countUnreadMessages(conversation, req.user);
             }
         }
-        res.status(200).json(conversations);
+        res.status(200).json({ 
+            conversations: conversations.docs, 
+            hasNext: conversations.hasNextPage 
+        });
     } catch(err) {
         return next({status: 400, message: err.message});
     }

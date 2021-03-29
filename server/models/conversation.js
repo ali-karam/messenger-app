@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const conversationSchema = new mongoose.Schema({
     users: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     lastMessage: {type: mongoose.Schema.Types.ObjectId, ref: 'Message'}
 }, { timestamps: true });
+
+conversationSchema.plugin(mongoosePaginate);
 
 conversationSchema.statics.initiateConversation = async function(currentUser, otherUser) {
     const existingConvo = await Conversation.findOne({
@@ -30,6 +33,29 @@ conversationSchema.statics.findConversation = async function(convoId, userId) {
         throw new Error('Conversation does not exist');
     }
     return conversation;
+};
+
+conversationSchema.statics.findConversations = async function(user, page, limit) {
+    const populateUser = {
+        path: 'users', 
+        select: 'username avatar',  
+        match: { _id : { $ne : user } }
+    };
+    const populateLastMessage = {
+        path: 'lastMessage',
+        select: 'message creator read'
+    };
+    const options = {
+        page,
+        limit,
+        populate: [populateUser, populateLastMessage],
+        sort: {
+            updatedAt: 'desc'
+        },
+        lean: true
+    }
+    const result = await Conversation.paginate({ users: user }, options);
+    return result;
 };
 
 const Conversation = mongoose.model('Conversation', conversationSchema);
