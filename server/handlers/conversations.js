@@ -92,7 +92,7 @@ exports.sendMessage = async function(req, res, next) {
         }
         let newMessage = await db.Message.create({ conversation, creator, message });
         newMessage = await db.Message.populate(newMessage, {
-            path: 'creator',
+            path: 'creator conversation',
             select: 'username'
         });
         await db.Conversation.updateOne(conversation, { lastMessage: newMessage });
