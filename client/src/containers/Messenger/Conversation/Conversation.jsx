@@ -3,6 +3,7 @@ import axios from 'axios';
 import conversationStyle from './ConversationStyle';
 import { Avatar, CircularProgress, TextareaAutosize, Button } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
+import useIntersectionObserver from '../../../customHooks/useIntersectionObserver';
 
 const displayAvatar = (img) => {
   let avatar = img;
@@ -50,20 +51,7 @@ const Conversation = () => {
     }
   }, []);
 
-  const lastMsgRef = useCallback(node => {
-    if(loading) return;
-    if(observer.current) {
-      observer.current.disconnect();
-    }
-    observer.current = new IntersectionObserver(entries => {
-      if(entries[0].isIntersecting && hasMore) {
-        setPageNum(prevPageNum => ++prevPageNum);
-      }
-    })
-    if(node) {
-      observer.current.observe(node);
-    }
-  }, [loading, hasMore]);
+  const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
 
   let messagesDisplay;
   if(messages) {

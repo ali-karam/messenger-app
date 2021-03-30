@@ -1,27 +1,28 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, Route } from 'react-router-dom';
 import axios from 'axios';
 import { CircularProgress } from '@material-ui/core';
 import ConversationPreview from '../../components/ConversationPreview/ConversationPreview';
 import UserCard from '../../components/UserCard/UserCard';
 import Conversation from './Conversation/Conversation';
+import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 
 const Messenger = ({ match }) => {
   const [query, setQuery] = useState('');
-  const [pageNum, setPageNum] = useState(1);
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
   const [conversations, setConversations] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [convoPageNum, setConvoPageNum] = useState(1);
+  const [hasMoreUsers, setHasMoreUsers] = useState(false);
   const [hasMoreConvos, setHasMoreConvos] = useState(false);
+  const [userPageNum, setPageNum] = useState(1);
+  const [convoPageNum, setConvoPageNum] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const history = useHistory();
 
   useEffect(() => {
     if (query.trim() === '') {
-      doneSearchingHandler();
+      setIsSearching(false);
       setLoading(false);
       return;
     };
@@ -29,10 +30,10 @@ const Messenger = ({ match }) => {
     setLoading(true);
 
     const timeoutId = setTimeout(() => {
-      axios.get('/users', { params: { username: query, page: pageNum } })
+      axios.get(`/users?username=${query}&page=${userPageNum}`)
         .then(res => {
           setUsers(prevUsers => [...prevUsers, ...res.data.users]);
-          setHasMore(res.data.hasNext);
+          setHasMoreUsers(res.data.hasNext);
           setLoading(false);
         })
         .catch(err => {
@@ -42,7 +43,7 @@ const Messenger = ({ match }) => {
     }, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [query, pageNum]);
+  }, [query, userPageNum]);
 
   useEffect(() => {
     setUsers([]);
@@ -52,7 +53,6 @@ const Messenger = ({ match }) => {
     setLoading(true);
     axios.get(`/conversations?page=${convoPageNum}`)
       .then(res => {
-        console.log(res.data.conversations)
         setConversations(prevConvos => [...prevConvos, ...res.data.conversations]);
         setHasMoreConvos(res.data.hasNext);
         setLoading(false);
@@ -64,49 +64,17 @@ const Messenger = ({ match }) => {
   }, [convoPageNum]);
 
   const observer = useRef();
-  const lastUserRef = useCallback(node => {
-    if(loading) return;
-    if(observer.current) {
-      observer.current.disconnect();
-    }
-    observer.current = new IntersectionObserver(entries => {
-      if(entries[0].isIntersecting && hasMore) {
-        setPageNum(prevPageNum => ++prevPageNum);
-      }
-    })
-    if(node) {
-      observer.current.observe(node);
-    }
-  }, [loading, hasMore]);
-
   const convoObserver = useRef();
-  const lastConvoRef = useCallback(node => {
-    if(loading) return;
-    if(convoObserver.current) {
-      convoObserver.current.disconnect();
-    }
-    convoObserver.current = new IntersectionObserver(entries => {
-      if(entries[0].isIntersecting && hasMoreConvos) {
-        setConvoPageNum(prevPageNum => ++prevPageNum);
-      }
-    })
-    if(node) {
-      convoObserver.current.observe(node);
-    }
-  }, [loading, hasMoreConvos]);
+  const lastUserRef = useIntersectionObserver(observer, setPageNum, hasMoreUsers, loading);
+  const lastConvoRef = useIntersectionObserver(convoObserver, setConvoPageNum, hasMoreConvos, loading);
 
   const searchHandler = event => {
     setQuery(event.target.value);
     setPageNum(1);
   };
 
-  const doneSearchingHandler = () => {
-    setIsSearching(false);
-    setQuery('');
-  };
-
   const convoSelectedHandler = id => {
-    doneSearchingHandler();
+    setQuery('');
     history.push(`/messenger/${id}`);
   };
 
@@ -126,7 +94,7 @@ const Messenger = ({ match }) => {
           }
           return [newConvo, ...prevConvos];
         });
-        doneSearchingHandler();
+        setQuery('');
         history.push(`/messenger/${res.data.conversationId}`);
       })
       .catch(err => {
@@ -144,16 +112,14 @@ const Messenger = ({ match }) => {
             key={convo._id} 
             convo={convo} 
             click={() => convoSelectedHandler(convo._id)} 
-          />
-        );
+          />);
       } else {
         return (
           <ConversationPreview 
             key={convo._id} 
             convo={convo} 
             click={() => convoSelectedHandler(convo._id)} 
-          />
-        );
+          />);
       }
     });
   }
