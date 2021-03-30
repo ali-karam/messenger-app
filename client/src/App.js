@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { MuiThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider, LinearProgress } from "@material-ui/core";
 import { theme } from "./themes/theme.js";
 // import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
+import Auth from "./containers/Auth/Auth";
+import Dashboard from "./components/Dashboard";
 import AuthContext from "./context/auth-context";
 import ProtectedRoute from "./hoc/ProtectedRoute";
 
@@ -27,24 +26,23 @@ function App() {
         setIsLoading(false);
       })
       .catch(err => {
-        history.replace('/login');
+        history.replace('/auth');
         setIsLoading(false);
       });
   }, [history]);
 
   let routes = (
     <Switch>
-      <Route path="/login" component={Login} />
-      <Route path="/signup" component={Signup} />
+      <Route path="/auth" component={Auth} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
       <Route exact path="/">
-        <Redirect to="/signup" />
+        <Redirect to="/auth" />
       </Route>
       <Route render={() => <h1>Page not found</h1>}/>
     </Switch>
   );
   if(isLoading) {
-    routes = <div></div>
+    routes = <LinearProgress />
   }
 
   return (

@@ -9,7 +9,7 @@ export default function Dashboard() {
 
   const logout = async () => {
     await axios.post('/auth/logout');
-    history.push("/login");
+    history.push("/auth");
   };
 
   return (
