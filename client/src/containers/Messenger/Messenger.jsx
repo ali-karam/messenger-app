@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { CircularProgress } from '@material-ui/core';
 import ConversationPreview from '../../components/ConversationPreview/ConversationPreview';
+import UserCard from '../../components/UserCard/UserCard';
 
 const Messenger = () => {
   const [query, setQuery] = useState('');
@@ -98,17 +99,27 @@ const Messenger = () => {
       </p>
     ))
   }
+
+  const renderUsers = () => (
+    users.map((user, index) => {
+      if(users.length === index + 1) {
+        return (
+          <UserCard 
+            lastRef={lastUserRef} 
+            key={user._id} 
+            user={user} 
+          />
+        );
+      } else {
+        return <UserCard key={user._id} user={user} />;
+      }
+    })
+  );
   return (
     <>
       <input type="text" value={query} onChange={searchHandler} />
       {loading ? <CircularProgress /> : null}
-      {users.map((user, index) => {
-        if(users.length === index + 1) {
-          return <p ref={lastUserRef} key={user._id}>{user.username}</p>;
-        } else {
-          return <p key={user._id}>{user.username}</p>;
-        }
-      })}
+      {renderUsers()}
       <div style={{marginTop: 20}}>
         {conversationDisplay}
       </div>
