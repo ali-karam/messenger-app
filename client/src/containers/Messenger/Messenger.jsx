@@ -1,20 +1,26 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useHistory, Route } from 'react-router-dom';
 import axios from 'axios';
 import { CircularProgress } from '@material-ui/core';
 import ConversationPreview from '../../components/ConversationPreview/ConversationPreview';
 import UserCard from '../../components/UserCard/UserCard';
+import Conversation from './Conversation/Conversation';
 
-const Messenger = () => {
+const Messenger = ({ match }) => {
   const [query, setQuery] = useState('');
   const [pageNum, setPageNum] = useState(1);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [conversations, setConversations] = useState(null);
-  const [conversation, setConversation] = useState(null);
+
+  const history = useHistory();
 
   useEffect(() => {
-    if (query.trim() === '') return;
+    if (query.trim() === '') {
+      setLoading(false);
+      return;
+    };
     setLoading(true);
 
     const timeoutId = setTimeout(() => {
@@ -66,15 +72,19 @@ const Messenger = () => {
     }
   }, [loading, hasMore]);
 
-  const searchHandler = (event) => {
+  const searchHandler = event => {
     setQuery(event.target.value);
     setPageNum(1);
   };
 
-  const convoSelectHandler = (id) => {
-    axios.get(`/conversations/${id}`)
+  const convoSelectedHandler = id => {
+    history.push(`/messenger/${id}`);
+  };
+
+  const personSelectedHandler = id => {
+    axios.post('/conversations', { userId: id })
       .then(res => {
-        setConversation(res.data.messages);
+        history.push(`/messenger/${res.data.conversationId}`);
       })
       .catch(err => {
         console.log(err);
@@ -82,22 +92,14 @@ const Messenger = () => {
   };
 
   let conversationDisplay = null;
-  let singleConversation = null;
   if(conversations) {
     conversationDisplay = conversations.map(convo => (
         <ConversationPreview 
           key={convo._id} 
           convo={convo} 
-          click={() => convoSelectHandler(convo._id)} 
+          click={() => convoSelectedHandler(convo._id)} 
         />
     ));
-  }
-  if(conversation) {
-    singleConversation = conversation.map(message => (
-      <p key={message._id}>
-        {message.creator.username}: {message.message} 
-      </p>
-    ))
   }
 
   const renderUsers = () => (
@@ -108,23 +110,26 @@ const Messenger = () => {
             lastRef={lastUserRef} 
             key={user._id} 
             user={user} 
+            click={() => personSelectedHandler(user._id)}
           />
         );
       } else {
-        return <UserCard key={user._id} user={user} />;
+        return <UserCard key={user._id} user={user} click={() => personSelectedHandler(user._id)}/>;
       }
     })
   );
   return (
-    <>
+    <div style={{width: '90%'}}>
       <input type="text" value={query} onChange={searchHandler} />
       {loading ? <CircularProgress /> : null}
-      {renderUsers()}
-      <div style={{marginTop: 20}}>
+      <div style={{marginTop: 20, width: '30%', float: 'left'}}>
+        {renderUsers()}
         {conversationDisplay}
       </div>
-      {singleConversation}
-    </>
+      <div style={{width: '50%', float: 'right'}}>
+        <Route path={match.url + '/:id'} exact component={Conversation} />
+      </div>
+    </div>
   );
 };
 
