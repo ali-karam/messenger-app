@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { CircularProgress } from '@material-ui/core';
+import ConversationPreview from '../../components/ConversationPreview/ConversationPreview';
 
 const Messenger = () => {
   const [query, setQuery] = useState('');
@@ -83,16 +84,11 @@ const Messenger = () => {
   let singleConversation = null;
   if(conversations) {
     conversationDisplay = conversations.map(convo => (
-      <div key={convo._id} onClick={() => convoSelectHandler(convo._id)}>
-        <p >
-          {convo.users[0].username}
-        </p>
-        
-        <p>
-          {convo.lastMessage.creator === convo.users[0]._id ? convo.users[0].username : 'You'}:
-          {convo.lastMessage.message} ({convo.lastMessage.read ? 'read' : 'not-read'})
-        </p>
-      </div>
+        <ConversationPreview 
+          key={convo._id} 
+          convo={convo} 
+          click={() => convoSelectHandler(convo._id)} 
+        />
     ));
   }
   if(conversation) {
@@ -113,7 +109,9 @@ const Messenger = () => {
           return <p key={user._id}>{user.username}</p>;
         }
       })}
-      {conversationDisplay}
+      <div style={{marginTop: 20}}>
+        {conversationDisplay}
+      </div>
       {singleConversation}
     </>
   );
