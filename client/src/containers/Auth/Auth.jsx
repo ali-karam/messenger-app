@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Box, Button, CssBaseline, Paper, Grid, Typography } from '@material-ui/core';
 import { Formik, Form } from "formik";
@@ -16,9 +16,15 @@ const Auth = () => {
   const [isLoginPage, setIsLoginPage] = React.useState(true);
   const [errorMsg, setErrorMsg] = React.useState("Something went wrong");
 
-  const history = useHistory();
+  const { push } = useHistory();
   const authContext = useContext(AuthContext);
   const resetFormBtnRef = useRef(null);
+
+  useEffect(() => {
+    if(authContext.user) {
+      push("/dashboard");
+    }
+  }, [authContext.user, push]);
 
   let validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -58,7 +64,7 @@ const Auth = () => {
     try {
       const res = await axios.post('/auth/register', {username, email, password});
       authContext.login(res.data);
-      history.push("/dashboard");
+      push("/dashboard");
     } catch(err) {
       errorMsgHandler(err);
     }
@@ -68,7 +74,7 @@ const Auth = () => {
     try {
       const res = await axios.post('/auth/login', {email, password});
       authContext.login(res.data);
-      history.push("/dashboard");
+      push("/dashboard");
     } catch(err) {
       errorMsgHandler(err);
     }
