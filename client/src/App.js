@@ -21,7 +21,7 @@ function App() {
       .then(res => {
         if(res.data) {
           setUser(res.data);
-          history.replace('/dashboard');
+          history.push(history.location.state.from);
         }
         setIsLoading(false);
       })
