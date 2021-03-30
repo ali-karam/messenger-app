@@ -5,7 +5,7 @@ import { theme } from "./themes/theme.js";
 import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
 import Auth from "./containers/Auth/Auth";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/Dashboard/Dashboard";
 import AuthContext from "./context/auth-context";
 import ProtectedRoute from "./hoc/ProtectedRoute";
 import Messenger from "./containers/Messenger/Messenger";

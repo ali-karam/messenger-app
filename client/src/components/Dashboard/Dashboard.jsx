@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import AuthContext from "../context/auth-context";
+import AuthContext from "../../context/auth-context";
 
 export default function Dashboard() {
   const history = useHistory();
