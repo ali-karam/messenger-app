@@ -8,6 +8,7 @@ import Auth from "./containers/Auth/Auth";
 import Dashboard from "./components/Dashboard";
 import AuthContext from "./context/auth-context";
 import ProtectedRoute from "./hoc/ProtectedRoute";
+import Messenger from "./containers/Messenger/Messenger";
 
 import "./App.css";
 
@@ -35,6 +36,7 @@ function App() {
     <Switch>
       <Route path="/auth" component={Auth} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/messenger" component={Messenger}/>
       <Route exact path="/">
         <Redirect to="/auth" />
       </Route>
