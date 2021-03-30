@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import conversationStyle from './ConversationStyle';
-import { Avatar, CircularProgress, TextField } from '@material-ui/core';
+import { Avatar, CircularProgress, InputBase, InputAdornment, IconButton } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import useIntersectionObserver from '../../../customHooks/useIntersectionObserver';
+import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
+import EmojiEmotionsIcon from '@material-ui/icons/EmojiEmotions';
 
 const displayAvatar = (img) => {
   let avatar = img;
@@ -110,22 +112,33 @@ const Conversation = () => {
   };
  
   return (
-    <div style={{height: '600px'}}>
+    <div>
       {loading ? <CircularProgress /> : null}
       {userDisplay}
       <div style={{height: 400, justifyContent: 'end', overflow: 'scroll'}}>
         {messagesDisplay}
       </div>
-      <TextField
+      <InputBase
+        className={classes.messageBar}
         placeholder='Type something...'
         autoFocus
         multiline
         variant='outlined'
-        rowsMax={5}
+        rowsMax={4}
         spellCheck
         value={text}
         onKeyDown={handleEnter}
         onChange={event => setText(event.target.value)}
+        endAdornment={(
+          <InputAdornment position='end'>
+            <IconButton>
+              <EmojiEmotionsIcon />
+            </IconButton>
+            <IconButton>
+              <PhotoLibraryIcon/>
+            </IconButton>
+          </InputAdornment>
+        )}
       />
     </div>
   );
