@@ -12,15 +12,20 @@ const Messenger = ({ match }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
-  const [conversations, setConversations] = useState(null);
+  const [conversations, setConversations] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [convoPageNum, setConvoPageNum] = useState(1);
+  const [hasMoreConvos, setHasMoreConvos] = useState(false);
 
   const history = useHistory();
 
   useEffect(() => {
     if (query.trim() === '') {
+      doneSearchingHandler();
       setLoading(false);
       return;
     };
+    setIsSearching(true);
     setLoading(true);
 
     const timeoutId = setTimeout(() => {
@@ -45,16 +50,18 @@ const Messenger = ({ match }) => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get('/conversations')
+    axios.get(`/conversations?page=${convoPageNum}`)
       .then(res => {
-        setConversations(res.data.conversations);
+        console.log(res.data.conversations)
+        setConversations(prevConvos => [...prevConvos, ...res.data.conversations]);
+        setHasMoreConvos(res.data.hasNext);
         setLoading(false);
       })
       .catch(err => {
         console.log(err);
         setLoading(false);
       });
-  }, []);
+  }, [convoPageNum]);
 
   const observer = useRef();
   const lastUserRef = useCallback(node => {
@@ -72,18 +79,54 @@ const Messenger = ({ match }) => {
     }
   }, [loading, hasMore]);
 
+  const convoObserver = useRef();
+  const lastConvoRef = useCallback(node => {
+    if(loading) return;
+    if(convoObserver.current) {
+      convoObserver.current.disconnect();
+    }
+    convoObserver.current = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting && hasMoreConvos) {
+        setConvoPageNum(prevPageNum => ++prevPageNum);
+      }
+    })
+    if(node) {
+      convoObserver.current.observe(node);
+    }
+  }, [loading, hasMoreConvos]);
+
   const searchHandler = event => {
     setQuery(event.target.value);
     setPageNum(1);
   };
 
+  const doneSearchingHandler = () => {
+    setIsSearching(false);
+    setQuery('');
+  };
+
   const convoSelectedHandler = id => {
+    doneSearchingHandler();
     history.push(`/messenger/${id}`);
   };
 
-  const personSelectedHandler = id => {
-    axios.post('/conversations', { userId: id })
+  const personSelectedHandler = user => {
+    axios.post('/conversations', { userId: user._id })
       .then(res => {
+        const newConvo = {
+          _id: res.data.conversationId,
+          users: [user]
+        };
+        if(res.data.lastMesssage) {
+          newConvo.lastMessage = res.data.lastMessage;
+        }
+        setConversations(prevConvos => {
+          if(prevConvos.some(convo => convo._id === res.data.conversationId)) {
+            return prevConvos;
+          }
+          return [newConvo, ...prevConvos];
+        });
+        doneSearchingHandler();
         history.push(`/messenger/${res.data.conversationId}`);
       })
       .catch(err => {
@@ -92,14 +135,27 @@ const Messenger = ({ match }) => {
   };
 
   let conversationDisplay = null;
-  if(conversations) {
-    conversationDisplay = conversations.map(convo => (
-        <ConversationPreview 
-          key={convo._id} 
-          convo={convo} 
-          click={() => convoSelectedHandler(convo._id)} 
-        />
-    ));
+  if(conversations && !isSearching) {
+    conversationDisplay = conversations.map((convo, index) => {
+      if(conversations.length === index + 1) {
+        return (
+          <ConversationPreview 
+            lastRef={lastConvoRef}
+            key={convo._id} 
+            convo={convo} 
+            click={() => convoSelectedHandler(convo._id)} 
+          />
+        );
+      } else {
+        return (
+          <ConversationPreview 
+            key={convo._id} 
+            convo={convo} 
+            click={() => convoSelectedHandler(convo._id)} 
+          />
+        );
+      }
+    });
   }
 
   const renderUsers = () => (
@@ -110,11 +166,11 @@ const Messenger = ({ match }) => {
             lastRef={lastUserRef} 
             key={user._id} 
             user={user} 
-            click={() => personSelectedHandler(user._id)}
+            click={() => personSelectedHandler(user)}
           />
         );
       } else {
-        return <UserCard key={user._id} user={user} click={() => personSelectedHandler(user._id)}/>;
+        return <UserCard key={user._id} user={user} click={() => personSelectedHandler(user)}/>;
       }
     })
   );
@@ -123,7 +179,7 @@ const Messenger = ({ match }) => {
       <input type="text" value={query} onChange={searchHandler} />
       {loading ? <CircularProgress /> : null}
       <div style={{marginTop: 20, width: '30%', float: 'left'}}>
-        {renderUsers()}
+        {isSearching ? renderUsers() : null}
         {conversationDisplay}
       </div>
       <div style={{width: '50%', float: 'right'}}>
