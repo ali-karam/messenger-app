@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import conversationStyle from './ConversationStyle';
-import { Avatar, CircularProgress, TextareaAutosize, Button } from '@material-ui/core';
+import { Avatar, CircularProgress, TextField } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import useIntersectionObserver from '../../../customHooks/useIntersectionObserver';
 
@@ -23,7 +23,6 @@ const Conversation = () => {
   const [text, setText] = useState('');
 
   const { id } = useParams();
-  const submitBtnRef = useRef();
   const observer = useRef();
 
   useEffect(() => {
@@ -90,28 +89,23 @@ const Conversation = () => {
     )
   }
 
-  const handleSubmit = event => {
-    event.preventDefault();
-
-    if(text.trim() !== '') {
-      axios.post(`/conversations/${id}`, { message: text })
-        .then(res => {
-          setMessages(prevMessages => {
-            prevMessages.pop();
-            return [res.data, ...prevMessages];
-          });
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    }
-    setText('');
-  };
-
   const handleEnter = event => {
     if(event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      submitBtnRef.current.click();
+      
+      if(text.trim() !== '') {
+        axios.post(`/conversations/${id}`, { message: text })
+          .then(res => {
+            setMessages(prevMessages => {
+              prevMessages.pop();
+              return [res.data, ...prevMessages];
+            });
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
+      setText('');
     }
   };
  
@@ -122,24 +116,17 @@ const Conversation = () => {
       <div style={{height: 400, justifyContent: 'end', overflow: 'scroll'}}>
         {messagesDisplay}
       </div>
-      <form onSubmit={handleSubmit}>
-        <TextareaAutosize 
-          aria-label="Empty text box" 
-          placeholder="Type something..." 
-          autoFocus
-          rowsMax={5} 
-          spellCheck
-          value={text}
-          onKeyDown={handleEnter}
-          onChange={event => setText(event.target.value)}
-        />
-        <Button 
-          size="large" 
-          variant="contained" 
-          color="primary" 
-          type="submit"
-          ref={submitBtnRef}>Send</Button>
-      </form>
+      <TextField
+        placeholder='Type something...'
+        autoFocus
+        multiline
+        variant='outlined'
+        rowsMax={5}
+        spellCheck
+        value={text}
+        onKeyDown={handleEnter}
+        onChange={event => setText(event.target.value)}
+      />
     </div>
   );
 };
