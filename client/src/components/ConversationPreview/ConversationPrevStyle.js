@@ -3,8 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 const conversationPrevStyle = makeStyles(theme => ({
     card: {
        padding: '0px 10px',
-       width: 250,
-       height: 85,
+       height: 75,
+       marginBottom: 5,
+       boxShadow: '1px 1px 2px #faf7f7'
     },
     avatar: {
         float: 'left',
