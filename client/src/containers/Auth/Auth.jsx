@@ -22,7 +22,7 @@ const Auth = () => {
 
   useEffect(() => {
     if(authContext.user) {
-      push("/dashboard");
+      push("/messenger");
     }
   }, [authContext.user, push]);
 
@@ -64,7 +64,7 @@ const Auth = () => {
     try {
       const res = await axios.post('/auth/register', {username, email, password});
       authContext.login(res.data);
-      push("/dashboard");
+      push("/messenger");
     } catch(err) {
       errorMsgHandler(err);
     }
@@ -74,7 +74,7 @@ const Auth = () => {
     try {
       const res = await axios.post('/auth/login', {email, password});
       authContext.login(res.data);
-      push("/dashboard");
+      push("/messenger");
     } catch(err) {
       errorMsgHandler(err);
     }
