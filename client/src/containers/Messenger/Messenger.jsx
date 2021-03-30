@@ -72,7 +72,7 @@ const Messenger = () => {
   const convoSelectHandler = (id) => {
     axios.get(`/conversations/${id}`)
       .then(res => {
-        setConversation(res.data.conversation);
+        setConversation(res.data.messages);
       })
       .catch(err => {
         console.log(err);
@@ -83,13 +83,24 @@ const Messenger = () => {
   let singleConversation = null;
   if(conversations) {
     conversationDisplay = conversations.map(convo => (
-      <p key={convo._id} onClick={() => convoSelectHandler(convo._id)}>
-        {convo.users[0].username}
-      </p>
+      <div key={convo._id} onClick={() => convoSelectHandler(convo._id)}>
+        <p >
+          {convo.users[0].username}
+        </p>
+        
+        <p>
+          {convo.lastMessage.creator === convo.users[0]._id ? convo.users[0].username : 'You'}:
+          {convo.lastMessage.message} ({convo.lastMessage.read ? 'read' : 'not-read'})
+        </p>
+      </div>
     ));
   }
   if(conversation) {
-    singleConversation = <p>{conversation.users[0].username}</p>;
+    singleConversation = conversation.map(message => (
+      <p key={message._id}>
+        {message.creator.username}: {message.message} 
+      </p>
+    ))
   }
   return (
     <>
