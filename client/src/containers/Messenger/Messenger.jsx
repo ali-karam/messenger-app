@@ -8,6 +8,8 @@ const Messenger = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
+  const [conversations, setConversations] = useState(null);
+  const [conversation, setConversation] = useState(null);
 
   useEffect(() => {
     if (query.trim() === '') return;
@@ -22,6 +24,7 @@ const Messenger = () => {
         })
         .catch(err => {
           console.log(err);
+          setLoading(false);
         });
     }, 1000);
 
@@ -31,6 +34,19 @@ const Messenger = () => {
   useEffect(() => {
     setUsers([]);
   }, [query]);
+
+  useEffect(() => {
+    setLoading(true);
+    axios.get('/conversations')
+      .then(res => {
+        setConversations(res.data.conversations);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
 
   const observer = useRef();
   const lastUserRef = useCallback(node => {
@@ -53,6 +69,28 @@ const Messenger = () => {
     setPageNum(1);
   };
 
+  const convoSelectHandler = (id) => {
+    axios.get(`/conversations/${id}`)
+      .then(res => {
+        setConversation(res.data.conversation);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  let conversationDisplay = null;
+  let singleConversation = null;
+  if(conversations) {
+    conversationDisplay = conversations.map(convo => (
+      <p key={convo._id} onClick={() => convoSelectHandler(convo._id)}>
+        {convo.users[0].username}
+      </p>
+    ));
+  }
+  if(conversation) {
+    singleConversation = <p>{conversation.users[0].username}</p>;
+  }
   return (
     <>
       <input type="text" value={query} onChange={searchHandler} />
@@ -64,6 +102,8 @@ const Messenger = () => {
           return <p key={user._id}>{user.username}</p>;
         }
       })}
+      {conversationDisplay}
+      {singleConversation}
     </>
   );
 };
