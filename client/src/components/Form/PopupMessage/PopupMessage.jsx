@@ -13,16 +13,14 @@ const PopupMessage = ({open, handleClose, message}) => (
     autoHideDuration={6000}
     onClose={handleClose}
     action={
-      <React.Fragment>
-        <IconButton
-          size="small"
-          aria-label="close"
-          color="inherit"
-          onClick={handleClose}
-        >
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
     }
   >
     <Alert variant="filled" onClose={handleClose} severity="error">{message}</Alert>
