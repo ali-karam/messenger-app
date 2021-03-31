@@ -1,7 +1,7 @@
 import React from "react";
 import { Snackbar, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import Alert from "@material-ui/lab/Alert"
+import Alert from "@material-ui/lab/Alert";
 
 const PopupMessage = ({open, handleClose, message}) => (
   <Snackbar

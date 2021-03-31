@@ -2,9 +2,10 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const userCardStyle = makeStyles(theme => ({
     card: {
-       padding: '0px 10px',
-       width: 240,
-       height: 85,
+      padding: '0px 10px',
+      minHeight: 75,
+      marginBottom: 5,
+      boxShadow: '1px 1px 2px #faf7f7'
     },
     avatar: {
         float: 'left',

@@ -2,45 +2,50 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const conversationPrevStyle = makeStyles(theme => ({
     card: {
-       padding: '0px 10px',
-       height: 75,
-       marginBottom: 5,
-       boxShadow: '1px 1px 2px #faf7f7'
+       minHeight: 75,
+       boxShadow: '1px 1px 2px #faf7f7',
+       display: 'flex',
+       justifyContent: 'flex-start',
+       alignItems: 'center',
+       marginBottom: 10,
     },
     avatar: {
-        float: 'left',
         backgroundColor: theme.palette.primary.main,
         height: 47,
         width: 47,
-        margin: '18px 4px',
+        marginRight: 10
     },
     info: {
-        display: 'inline-block',
-        marginLeft: 7
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
     },
     username: {
         textTransform: 'Capitalize',
-        marginBottom: 5,
-        marginTop: 22,
-        fontSize: 15
+        fontSize: '0.9rem',
+        margin: 1
     },
     lastMessage: {
-        fontSize: 12,
-        marginTop: 0,
-        whiteSpace: 'nowrap',
+        fontSize: '0.75rem',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        width: 160
+        margin: 1
     },
     unread: {
         fontWeight: 'bold'
     },
     notification: {
-        display: 'inline',
-        float: 'right',
-        marginTop: 40,
-        marginRight: 10,
-        verticalAlign: 'middle'
+      backgroundColor: theme.palette.primary.main,
+      height: 18,
+      minWidth: 18,
+      color: 'white',
+      borderRadius: '50%',
+      padding: '1.5px',
+      fontSize: '0.65rem',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginLeft: 'auto',
+      marginRight: '10px',
+      lineHeight: '1rem'
     }
 }));
 

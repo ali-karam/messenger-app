@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, Route } from 'react-router-dom';
 import axios from 'axios';
-import { CircularProgress, Grid, Box, InputBase, InputAdornment, Typography } from '@material-ui/core';
+import { CircularProgress, Grid, InputBase, InputAdornment, Typography } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ConversationPreview from '../../components/ConversationPreview/ConversationPreview';
 import UserCard from '../../components/UserCard/UserCard';
@@ -144,29 +144,29 @@ const Messenger = ({ match }) => {
     })
   );
   return (
-    <Grid container>
-      <Grid item sm={4} md={5}>
-        <Typography variant='h5' className={classes.title}>Chats</Typography>
-        <InputBase
-          className={classes.searchBar}
-          variant='outlined' 
-          value={query} 
-          onChange={searchHandler}
-          placeholder='Search'
-          startAdornment= {(
-            <InputAdornment position='start'>
-              <SearchIcon fontSize='small' />
-            </InputAdornment>
-          )}
-        />
-        <div className={classes.loading}>
-          {loading ? <CircularProgress size={30} /> : null}
+    <Grid container component='main' className={classes.root}>
+      <Grid item sm={3} md={3}>
+        <div className={classes.sideBar}>
+          <Typography variant='h5' className={classes.title}>Chats</Typography>
+          <InputBase
+            className={classes.searchBar}
+            variant='outlined' 
+            value={query} 
+            onChange={searchHandler}
+            placeholder='Search'
+            startAdornment= {(
+              <InputAdornment position='start'>
+                <SearchIcon fontSize='small' />
+              </InputAdornment>
+            )}
+          />
+          {loading ? <CircularProgress size={30} className={classes.loading}/> : null}
+          <div className={classes.conversations}>
+            {isSearching ? renderUsers() : conversationDisplay}
+          </div>
         </div>
-        <Box className={classes.conversations}>
-          {isSearching ? renderUsers() : conversationDisplay}
-        </Box>
       </Grid>
-      <Grid item sm={8} md={7}>
+      <Grid item sm={9} md={9}>
         <Route path={match.url + '/:id'} exact component={Conversation} />
       </Grid>
     </Grid>

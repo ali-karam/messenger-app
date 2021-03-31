@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Avatar, Badge } from '@material-ui/core';
+import { Card, Avatar, Typography } from '@material-ui/core';
 import conversationPrevStyle from './ConversationPrevStyle';
 
 const displayLastMessage = (message) => {
@@ -29,13 +29,13 @@ const ConversationPreview = ({ convo, click, lastRef }) => {
       read = convo.lastMessage.read;
     }
     lastMessage = (
-      <p className={!read ? `${classes.unread} ${classes.lastMessage}` : classes.lastMessage}>
+      <Typography className={!read ? `${classes.unread} ${classes.lastMessage}` : classes.lastMessage}>
         {creator}: {displayLastMessage(convo.lastMessage.message)}
-      </p>
+      </Typography>
     );
   }
   if(convo.numUnread > 0) {
-    badge = <Badge badgeContent={convo.numUnread} color="primary" className={classes.notification}/>;
+    badge = <div className={classes.notification}>{convo.numUnread}</div>;
   }
   return (
     <Card className={classes.card} onClick={click} ref={lastRef}>
@@ -47,7 +47,7 @@ const ConversationPreview = ({ convo, click, lastRef }) => {
         {!otherUser.avatar ? otherUser.username.charAt(0).toUpperCase() : null}
       </Avatar>
       <div className={classes.info}>
-        <p className={classes.username}>{otherUser.username}</p>
+        <Typography className={classes.username}>{otherUser.username}</Typography>
         {lastMessage}
       </div>
       {badge}
