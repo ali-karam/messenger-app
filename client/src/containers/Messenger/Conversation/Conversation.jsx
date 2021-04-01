@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import conversationStyle from './ConversationStyle';
 import { Avatar, CircularProgress, InputBase, InputAdornment, IconButton } from '@material-ui/core';
@@ -12,7 +12,7 @@ const displayAvatar = (img) => {
   if(typeof img === 'object') {
     avatar = new Buffer.from(img).toString('base64');
   }
-  return `data:image/jpeg;base64,${avatar}`
+  return `data:image/jpeg;base64,${avatar}`;
 }
 
 const Conversation = () => {
@@ -46,35 +46,22 @@ const Conversation = () => {
     setMessages([]);
   }, [id]);
 
-  const latestMsgRef = useCallback(node => {
-    if(node) {
-      node.scrollIntoView({ smooth: true });
-    }
-  }, []);
-
   const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
 
   let messagesDisplay;
   if(messages) {
-    messagesDisplay = messages.slice(0).reverse().map((message, index) => {
+    messagesDisplay = messages.map((message, index) => {
       if(messages.length === index + 1) {
-        return (
-          <p key={message._id} ref={latestMsgRef}>
-            {message.creator.username}: {message.message}
-          </p>
-        );
-      } else if(index === 0) {
         return (
           <p key={message._id} ref={lastMsgRef}>
             {message.creator.username}: {message.message}
           </p>
         );
       }
-      else {
-        return <p key={message._id}>{message.creator.username}: {message.message}</p>
-      }
+      return <p key={message._id}>{message.creator.username}: {message.message}</p>;
     });
   }
+  
   let userDisplay;
   if(user) {
     userDisplay = (
@@ -112,10 +99,10 @@ const Conversation = () => {
   };
  
   return (
-    <div>
-      {loading ? <CircularProgress /> : null}
+    <div className={classes.root}>
       {userDisplay}
-      <div style={{height: 400, justifyContent: 'end', overflow: 'scroll'}}>
+      {loading ? <CircularProgress size={30}/> : null}
+      <div className={classes.messages}>
         {messagesDisplay}
       </div>
       <InputBase
