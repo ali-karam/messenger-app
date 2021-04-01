@@ -19,7 +19,10 @@ const conversationStyle = makeStyles(theme => ({
     overflow: 'scroll',
     width: '90%',
     display: 'flex',
-    flexDirection: 'column-reverse'
+    flexDirection: 'column-reverse',
+    alignItems: 'flex-end',
+    minHeight: '70vh',
+    paddingRight: 13
   }
 }));
 

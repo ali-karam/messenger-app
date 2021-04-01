@@ -1,19 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import conversationStyle from './ConversationStyle';
-import { Avatar, CircularProgress, InputBase, InputAdornment, IconButton } from '@material-ui/core';
+import { CircularProgress, InputBase, InputAdornment, IconButton } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import useIntersectionObserver from '../../../customHooks/useIntersectionObserver';
 import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import EmojiEmotionsIcon from '@material-ui/icons/EmojiEmotions';
-
-const displayAvatar = (img) => {
-  let avatar = img;
-  if(typeof img === 'object') {
-    avatar = new Buffer.from(img).toString('base64');
-  }
-  return `data:image/jpeg;base64,${avatar}`;
-}
+import Message from '../../../components/Message/Message';
 
 const Conversation = () => {
   const classes = conversationStyle();
@@ -52,30 +45,10 @@ const Conversation = () => {
   if(messages) {
     messagesDisplay = messages.map((message, index) => {
       if(messages.length === index + 1) {
-        return (
-          <p key={message._id} ref={lastMsgRef}>
-            {message.creator.username}: {message.message}
-          </p>
-        );
+        return <Message key={message._id} lastRef={lastMsgRef} message={message} user={user}/>;
       }
-      return <p key={message._id}>{message.creator.username}: {message.message}</p>;
+      return <Message key={message._id} message={message} user={user}/>;
     });
-  }
-  
-  let userDisplay;
-  if(user) {
-    userDisplay = (
-      <>
-        <Avatar
-          alt={user.username}
-          src={user.avatar ? displayAvatar(user.avatar) : null}
-          className={classes.avatar}
-        >
-          {!user.avatar ? user.username.charAt(0).toUpperCase() : null}
-        </Avatar>
-        {user.username}
-      </>
-    )
   }
 
   const handleEnter = event => {
@@ -100,7 +73,7 @@ const Conversation = () => {
  
   return (
     <div className={classes.root}>
-      {userDisplay}
+      {user ? <h2>{user.username}</h2> : null}
       {loading ? <CircularProgress size={30}/> : null}
       <div className={classes.messages}>
         {messagesDisplay}
