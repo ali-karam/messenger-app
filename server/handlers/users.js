@@ -4,9 +4,10 @@ exports.findUser = async function(req, res, next) {
     try {
         const limit = req.query.limit ? parseInt(req.query.limit) : 10;
         const page = req.query.page ? parseInt(req.query.page) : 1;
+        const options = { page, limit };
 
-        const currentUser = await db.User.findById(req.user);
-        const result = await currentUser.findOtherUsersByUsername(req.query.username, page, limit);
+        const result = await db.User.findOtherUsersByUsername(req.user, req.query.username, 
+            options);
         res.status(200).json({ users: result.docs, hasNext: result.hasNextPage });
     } catch(err) {
         return next({status: 400, message: err.message});
