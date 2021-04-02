@@ -4,10 +4,8 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 const messageSchema = new mongoose.Schema({
     conversation: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    message: {
-        type: mongoose.Schema.Types.Mixed,
-        required: true
-    },
+    text: String,
+    img: Buffer,
     read: {
         type: Boolean,
         default: false

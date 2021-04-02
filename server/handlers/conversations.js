@@ -79,14 +79,18 @@ exports.sendMessage = async function(req, res, next) {
         const conversation = await db.Conversation.findConversation(req.params.id, req.user);
         const creator = req.user;
         let message = req.body.message;
+        let newMessage;
 
         if(req.file) {
-            message = req.file.buffer;
+            const img = req.file.buffer;
+            const text = message;
+            newMessage = await db.Message.create({ conversation, creator, img, text });
+        } else {
+            if(!message) {
+                throw new Error('Message cannot be empty');
+            }
+            newMessage = await db.Message.create({ conversation, creator, text: message });
         }
-        if(!message || (typeof message === 'string' && !message.trim())) {
-            throw new Error('Message cannot be empty');
-        }
-        let newMessage = await db.Message.create({ conversation, creator, message });
         newMessage = await db.Message.populate(newMessage, {
             path: 'creator conversation',
             select: 'username'

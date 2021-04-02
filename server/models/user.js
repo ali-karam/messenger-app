@@ -53,14 +53,15 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
     return isMatch;
 };
 
-userSchema.methods.findOtherUsersByUsername = async function(queryUsername, page, limit) {
-    const options = { page, limit, select: 'username avatar' }
+userSchema.statics.findOtherUsersByUsername = async function(currentUserId, queryUsername, options){
+    const { page, limit } = options;
+    const queryOptions = { page, limit, select: 'username avatar' };
     const regex = new RegExp(queryUsername, 'i');
     const query = { $and: [
         { username: { $regex: regex } },
-        { _id:  { $ne: this._id } }
+        { _id:  { $ne: currentUserId } }
     ] };
-    const result = await User.paginate(query, options);
+    const result = await User.paginate(query, queryOptions);
     return result;
 };
 
