@@ -43,7 +43,7 @@ conversationSchema.statics.findConversations = async function(user, page, limit)
     };
     const populateLastMessage = {
         path: 'lastMessage',
-        select: 'message creator read'
+        select: 'text img creator read'
     };
     const options = {
         page,
