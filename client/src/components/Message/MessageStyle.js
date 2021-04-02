@@ -5,7 +5,13 @@ const messageStyle = makeStyles(theme => ({
     marginBottom: 12,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
+    '& $avatar': {
+      height: 22,
+      width: 22,
+      marginRight: 2,
+      top: 8
+    }
   },
   userMsg: {
     backgroundColor: '#f2f5fa',

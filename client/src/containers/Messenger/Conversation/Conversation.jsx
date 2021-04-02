@@ -45,9 +45,9 @@ const Conversation = () => {
   if(messages) {
     messagesDisplay = messages.map((message, index) => {
       if(messages.length === index + 1) {
-        return <Message key={message._id} lastRef={lastMsgRef} message={message} user={user}/>;
+        return <Message key={message._id} lastRef={lastMsgRef} message={message} user={user} />;
       }
-      return <Message key={message._id} message={message} user={user}/>;
+      return <Message key={message._id} message={message} user={user} latestMsg={index === 0} />;
     });
   }
 

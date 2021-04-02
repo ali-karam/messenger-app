@@ -24,10 +24,20 @@ const displayTimeStamp = date => {
   return moment(date).format('MMM DD, YYYY [at] h:mm a');
 };
 
-const Message = ({ message, lastRef, user }) => {
+const Message = ({ message, lastRef, user, latestMsg }) => {
   const authContext = useContext(AuthContext);
   const classes = messageStyle();
   const isLoggedInUser = authContext.user.id === message.creator._id;
+
+  const otherUserAvatar = (
+    <Avatar
+      alt={user.username}
+      src={user.avatar ? displayAvatar(user.avatar) : null}
+      className={classes.avatar}
+    >
+      {!user.avatar ? user.username.charAt(0).toUpperCase() : null}
+    </Avatar>
+  );
 
   let messageDisplay = (
     <div className={classes.userContent}>
@@ -40,19 +50,14 @@ const Message = ({ message, lastRef, user }) => {
       >
         {message.message}
       </Typography>
+      {latestMsg && isLoggedInUser && message.read ? otherUserAvatar : null }
     </div>
   );
-
+  
   if(!isLoggedInUser) {
     messageDisplay = (
       <div className={classes.otherUserContent}>
-        <Avatar
-          alt={user.username}
-          src={user.avatar ? displayAvatar(user.avatar) : null}
-          className={classes.avatar}
-        >
-          {!user.avatar ? user.username.charAt(0).toUpperCase() : null}
-        </Avatar>
+        {otherUserAvatar}
         <div>
           <Typography className={classes.messageInfo}>
             <span style={{textTransform: 'capitalize'}}>{user.username} </span> 
