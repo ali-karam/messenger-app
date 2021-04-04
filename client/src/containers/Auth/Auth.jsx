@@ -89,11 +89,6 @@ const Auth = () => {
     setOpen(true);
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") return;
-    setOpen(false);
-  };
-
   const submissionHandler = async (values, setSubmitting) => {
     setSubmitting(true);
     if(isLoginPage) {
@@ -178,7 +173,12 @@ const Auth = () => {
           </Box>
           <Box p={1} alignSelf="center" />
         </Box>
-        <PopupMessage open={open} handleClose={handleClose} message={errorMsg} type="error" />
+        <PopupMessage 
+          open={open} 
+          handleClose={() => setOpen(false)} 
+          message={errorMsg} 
+          type="error" 
+        />
       </Grid>
     </Grid>
   );
