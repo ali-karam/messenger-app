@@ -3,7 +3,7 @@ import { Snackbar, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import Alert from "@material-ui/lab/Alert";
 
-const PopupMessage = ({open, handleClose, message}) => (
+const PopupMessage = ({open, handleClose, message, type}) => (
   <Snackbar
     anchorOrigin={{
       vertical: "bottom",
@@ -23,7 +23,7 @@ const PopupMessage = ({open, handleClose, message}) => (
       </IconButton>
     }
   >
-    <Alert variant="filled" onClose={handleClose} severity="error">{message}</Alert>
+    <Alert variant="filled" onClose={handleClose} severity={type}>{message}</Alert>
   </Snackbar>
 );
 

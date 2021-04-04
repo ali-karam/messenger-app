@@ -7,7 +7,7 @@ import axios from 'axios';
 import AuthContext from '../../context/auth-context';
 import authStyle from './AuthStyle';
 import ValidatedTextField from '../../components/Form/ValidatedTextField/ValidatedTextField';
-import PopupMessage from '../../components/Form/PopupMessage/PopupMessage';
+import PopupMessage from '../../components/UI/PopupMessage/PopupMessage';
 import ImageOverlay from '../../components/Form/ImageOverlay/ImageOverlay';
 
 const Auth = () => {
@@ -178,7 +178,7 @@ const Auth = () => {
           </Box>
           <Box p={1} alignSelf="center" />
         </Box>
-        <PopupMessage open={open} handleClose={handleClose} message={errorMsg} />
+        <PopupMessage open={open} handleClose={handleClose} message={errorMsg} type="error" />
       </Grid>
     </Grid>
   );
