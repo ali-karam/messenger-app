@@ -8,6 +8,7 @@ import ConversationPreview from '../../components/Sidebar/ConversationPreview/Co
 import UserCard from '../../components/Sidebar/UserCard/UserCard';
 import Conversation from '../Conversation/Conversation';
 import Searchbar from '../../components/Sidebar/Searchbar/Searchbar';
+import PopupMessage from '../../components/UI/PopupMessage/PopupMessage';
 import sidebarStyle from './SidebarStyle';
 
 const Sidebar = ({ match }) => {
@@ -21,6 +22,7 @@ const Sidebar = ({ match }) => {
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const history = useHistory();
   const authContext = useContext(AuthContext);
@@ -40,9 +42,8 @@ const Sidebar = ({ match }) => {
         setLoading(false);
       })
       .catch(err => {
-        console.log(err);
-        setLoading(false);
-      })
+        errorHandler();
+      });
   }, [authContext]);
 
   useEffect(() => {
@@ -54,8 +55,7 @@ const Sidebar = ({ match }) => {
         setLoading(false);
       })
       .catch(err => {
-        console.log(err);
-        setLoading(false);
+        errorHandler();
       });
   }, [convoPageNum]);
 
@@ -76,8 +76,7 @@ const Sidebar = ({ match }) => {
           setLoading(false);
         })
         .catch(err => {
-          console.log(err);
-          setLoading(false);
+          errorHandler();
         });
     }, 1000);
 
@@ -87,6 +86,11 @@ const Sidebar = ({ match }) => {
   useEffect(() => {
     setUsers([]);
   }, [query]);
+
+  const errorHandler = () => {
+    setErrorMsg('Oops! Something went wrong');
+    setLoading(false);
+  };
 
   const searchHandler = event => {
     setQuery(event.target.value);
@@ -118,7 +122,7 @@ const Sidebar = ({ match }) => {
         history.push(`/messenger/${res.data.conversationId}`);
       })
       .catch(err => {
-        console.log(err);
+        setErrorMsg('Oops! Something went wrong');
       });
   };
 
@@ -182,6 +186,12 @@ const Sidebar = ({ match }) => {
           </div>
           {loading ? <CircularProgress size={30} className={classes.loading}/> : null}
         </div>
+        <PopupMessage 
+          open={errorMsg !== ''} 
+          handleClose={() => setErrorMsg('')} 
+          type='error' 
+          message={errorMsg}
+        />
       </Grid>
       <Grid item sm={9} md={9}>
         <Route path={match.url + '/:id'} exact component={Conversation} />
