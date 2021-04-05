@@ -3,7 +3,7 @@ import { Typography } from '@material-ui/core';
 import moment from 'moment';
 import { bufferToImgSrc } from '../../utils/ImageUtils';
 import AuthContext from '../../context/auth-context';
-import UserAvatar from '../UserAvatar/UserAvatar';
+import UserAvatar from '../UI/UserAvatar/UserAvatar';
 import messageStyle from './MessageStyle';
 
 const displayTimestamp = date => {
