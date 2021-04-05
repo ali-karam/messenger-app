@@ -86,22 +86,12 @@ const Conversation = () => {
     }
   };
 
-  const emojiSelectedHandler = (event, emojiObj) => {
-    setText((prevText) => prevText.concat(emojiObj.emoji));
-  };
-
-  const emojiBtnClickHandler = () => {
-    setEmojiPickerIsShowing((prevIsShowing) => !prevIsShowing);
-  };
-
-  const imgClickedHandler = (img) => {
-    setImgPreviewSrc(img);
-  };
-
   const emojiSelector = (
-    <ClickAwayListener onClickAway={emojiBtnClickHandler}>
+    <ClickAwayListener onClickAway={() => setEmojiPickerIsShowing(false)}>
       <div className={classes.emojiSelector}>
-        <Picker onEmojiClick={emojiSelectedHandler} />
+        <Picker
+          onEmojiClick={(event, emojiObj) => setText((prevText) => prevText.concat(emojiObj.emoji))}
+        />
       </div>
     </ClickAwayListener>
   );
@@ -116,7 +106,7 @@ const Conversation = () => {
             lastRef={lastMsgRef}
             message={message}
             otherUser={otherUser}
-            imgClicked={imgClickedHandler}
+            imgClicked={(img) => setImgPreviewSrc(img)}
           />
         );
       }
@@ -126,7 +116,7 @@ const Conversation = () => {
           message={message}
           otherUser={otherUser}
           latestMsg={index === 0}
-          imgClicked={imgClickedHandler}
+          imgClicked={(img) => setImgPreviewSrc(img)}
         />
       );
     });
@@ -143,7 +133,7 @@ const Conversation = () => {
         text={text}
         inputKeyDown={enterHandler}
         inputChange={(event) => setText(event.target.value)}
-        emojiBtnClick={emojiBtnClickHandler}
+        emojiBtnClick={() => setEmojiPickerIsShowing((prevIsShowing) => !prevIsShowing)}
         fileChange={fileSelectedHandler}
       />
       <Modal open={imgPreviewSrc !== null} onClose={() => setImgPreviewSrc(null)}>
