@@ -23,3 +23,6 @@ yarn-error.log*
 #TODO add .env to your gitignore
 
 client/.editorconfig
+client/.prettierrc.json
+.gitignore
+server/.prettierrc.json
