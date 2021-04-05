@@ -26,6 +26,39 @@ const Sidebar = ({ match }) => {
   const authContext = useContext(AuthContext);
   const classes = sidebarStyle();
 
+  const observer = useRef();
+  const convoObserver = useRef();
+  const lastUserRef = useIntersectionObserver(observer, setPageNum, hasMoreUsers, loading);
+  const lastConvoRef = useIntersectionObserver(convoObserver, setConvoPageNum, hasMoreConvos, 
+    loading);
+
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`/users/${authContext.user.id}`)
+      .then(res => {
+        setCurrentUser(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      })
+  }, [authContext]);
+
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`/conversations?page=${convoPageNum}`)
+      .then(res => {
+        setConversations(prevConvos => [...prevConvos, ...res.data.conversations]);
+        setHasMoreConvos(res.data.hasNext);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, [convoPageNum]);
+
   useEffect(() => {
     if (query.trim() === '') {
       setIsSearching(false);
@@ -54,38 +87,6 @@ const Sidebar = ({ match }) => {
   useEffect(() => {
     setUsers([]);
   }, [query]);
-
-  useEffect(() => {
-    setLoading(true);
-    axios.get(`/conversations?page=${convoPageNum}`)
-      .then(res => {
-        setConversations(prevConvos => [...prevConvos, ...res.data.conversations]);
-        setHasMoreConvos(res.data.hasNext);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-      });
-  }, [convoPageNum]);
-
-  useEffect(() => {
-    setLoading(true);
-    axios.get(`/users/${authContext.user.id}`)
-      .then(res => {
-        setCurrentUser(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-      })
-  }, [authContext]);
-
-  const observer = useRef();
-  const convoObserver = useRef();
-  const lastUserRef = useIntersectionObserver(observer, setPageNum, hasMoreUsers, loading);
-  const lastConvoRef = useIntersectionObserver(convoObserver, setConvoPageNum, hasMoreConvos, loading);
 
   const searchHandler = event => {
     setQuery(event.target.value);
@@ -121,6 +122,28 @@ const Sidebar = ({ match }) => {
       });
   };
 
+  const renderUsers = () => (
+    users.map((user, index) => {
+      if(users.length === index + 1) {
+        return (
+          <UserCard 
+            lastRef={lastUserRef} 
+            key={user._id} 
+            user={user} 
+            isOnline={true}
+            click={() => personSelectedHandler(user)}
+          />);
+      } 
+      return (
+        <UserCard 
+          key={user._id} 
+          user={user} 
+          isOnline={true} 
+          click={() => personSelectedHandler(user)}
+        />);
+    })
+  );
+
   let conversationDisplay = null;
   if(conversations && !isSearching) {
     conversationDisplay = conversations.map((convo, index) => {
@@ -133,42 +156,16 @@ const Sidebar = ({ match }) => {
             isOnline={false}
             click={() => convoSelectedHandler(convo._id)} 
           />);
-      } else {
-        return (
-          <ConversationPreview 
-            key={convo._id} 
-            convo={convo} 
-            isOnline={false}
-            click={() => convoSelectedHandler(convo._id)} 
-          />);
-      }
+      } 
+      return (
+        <ConversationPreview 
+          key={convo._id} 
+          convo={convo} 
+          isOnline={false}
+          click={() => convoSelectedHandler(convo._id)} 
+        />);
     });
   }
-
-  const renderUsers = () => (
-    users.map((user, index) => {
-      if(users.length === index + 1) {
-        return (
-          <UserCard 
-            lastRef={lastUserRef} 
-            key={user._id} 
-            user={user} 
-            isOnline={true}
-            click={() => personSelectedHandler(user)}
-          />
-        );
-      } else {
-        return (
-          <UserCard 
-            key={user._id} 
-            user={user} 
-            isOnline={true} 
-            click={() => personSelectedHandler(user)}
-          />
-        );
-      }
-    })
-  );
   return (
     <Grid container component='main' className={classes.root}>
       <Grid item sm={3} md={3}>
