@@ -18,7 +18,7 @@ const displayTimestamp = (date) => {
   return moment(date).format('MMM DD, YYYY [at] h:mm a');
 };
 
-const Message = ({ message, lastRef, otherUser, latestMsg }) => {
+const Message = ({ message, lastRef, otherUser, latestMsg, imgClicked }) => {
   const authContext = useContext(AuthContext);
   const classes = messageStyle();
   const isLoggedInUser = authContext.user.id === message.creator._id;
@@ -29,6 +29,7 @@ const Message = ({ message, lastRef, otherUser, latestMsg }) => {
         <img
           src={bufferToImgSrc(message.img)}
           alt={`${otherUser.username} sent`}
+          onClick={() => imgClicked(bufferToImgSrc(message.img))}
           className={classes.messageImg}
         />
       );

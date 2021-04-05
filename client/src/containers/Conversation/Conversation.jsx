@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { CircularProgress, ClickAwayListener } from '@material-ui/core';
+import { CircularProgress, ClickAwayListener, Modal } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import Picker from 'emoji-picker-react';
 import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
@@ -8,6 +8,7 @@ import Message from '../../components/Conversation/Message/Message';
 import MessageBar from '../../components/Conversation/MessageBar/MessageBar';
 import PopupMessage from '../../components/UI/PopupMessage/PopupMessage';
 import OtherUserBanner from '../../components/Conversation/OtherUserBanner/OtherUserBanner';
+import ImagePreview from '../../components/Conversation/ImagePreview/ImagePreview';
 import conversationStyle from './ConversationStyle';
 
 const Conversation = () => {
@@ -20,9 +21,11 @@ const Conversation = () => {
   const [text, setText] = useState('');
   const [emojiPickerIsShowing, setEmojiPickerIsShowing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [imgPreviewSrc, setImgPreviewSrc] = useState(null);
 
   const { id } = useParams();
   const observer = useRef();
+  const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
 
   useEffect(() => {
     setLoading(true);
@@ -43,27 +46,6 @@ const Conversation = () => {
   useEffect(() => {
     setMessages([]);
   }, [id]);
-
-  const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
-
-  let messagesDisplay;
-  if (messages) {
-    messagesDisplay = messages.map((message, index) => {
-      if (messages.length === index + 1) {
-        return (
-          <Message key={message._id} lastRef={lastMsgRef} message={message} otherUser={otherUser} />
-        );
-      }
-      return (
-        <Message
-          key={message._id}
-          message={message}
-          otherUser={otherUser}
-          latestMsg={index === 0}
-        />
-      );
-    });
-  }
 
   const sendMsgToServer = (data) => {
     axios
@@ -112,6 +94,10 @@ const Conversation = () => {
     setEmojiPickerIsShowing((prevIsShowing) => !prevIsShowing);
   };
 
+  const imgClickedHandler = (img) => {
+    setImgPreviewSrc(img);
+  };
+
   const emojiSelector = (
     <ClickAwayListener onClickAway={emojiBtnClickHandler}>
       <div className={classes.emojiSelector}>
@@ -120,6 +106,31 @@ const Conversation = () => {
     </ClickAwayListener>
   );
 
+  let messagesDisplay;
+  if (messages) {
+    messagesDisplay = messages.map((message, index) => {
+      if (messages.length === index + 1) {
+        return (
+          <Message
+            key={message._id}
+            lastRef={lastMsgRef}
+            message={message}
+            otherUser={otherUser}
+            imgClicked={imgClickedHandler}
+          />
+        );
+      }
+      return (
+        <Message
+          key={message._id}
+          message={message}
+          otherUser={otherUser}
+          latestMsg={index === 0}
+          imgClicked={imgClickedHandler}
+        />
+      );
+    });
+  }
   return (
     <div className={classes.root}>
       {otherUser ? <OtherUserBanner username={otherUser.username} isOnline /> : null}
@@ -135,6 +146,9 @@ const Conversation = () => {
         emojiBtnClick={emojiBtnClickHandler}
         fileChange={fileSelectedHandler}
       />
+      <Modal open={imgPreviewSrc !== null} onClose={() => setImgPreviewSrc(null)}>
+        <ImagePreview src={imgPreviewSrc} closeClicked={() => setImgPreviewSrc(null)} />
+      </Modal>
       <PopupMessage
         open={errorMsg !== ''}
         handleClose={() => setErrorMsg('')}
