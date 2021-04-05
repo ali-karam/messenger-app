@@ -86,7 +86,7 @@ exports.sendMessage = async function(req, res, next) {
             const text = message;
             newMessage = await db.Message.create({ conversation, creator, img, text });
         } else {
-            if(!message) {
+            if(!message || !message.trim()) {
                 throw new Error('Message cannot be empty');
             }
             newMessage = await db.Message.create({ conversation, creator, text: message });

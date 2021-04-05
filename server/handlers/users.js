@@ -29,7 +29,8 @@ exports.updateUser = async function(req, res, next) {
         const user = await db.User.findById(req.params.id);
         user.avatar = req.file.buffer;
         await user.save();
-        res.send();
+        const { username, avatar } = user;
+        return res.status(200).json({ username, avatar });
     } catch(err) {
         return next({status: 400, message: err.message});
     }
