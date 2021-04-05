@@ -10,8 +10,7 @@ const messengerStyle = makeStyles(theme => ({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginLeft: 10,
-    maxHeight: '100vh',
-    overflow: 'scroll',
+    maxHeight: '100vh'
   },
   searchBar: {
     margin: '12px 0',
@@ -24,13 +23,18 @@ const messengerStyle = makeStyles(theme => ({
     fontSize: 13
   },
   conversations: {
-    width: '90%'
+    width: '90%',
+    overflow: 'scroll',
+    paddingRight: 15
   },
   title: {
     marginTop: 20
   },
   loading: {
     alignSelf: 'center'
+  },
+  currentUser: {
+    width: '90%'
   }
 }));
 

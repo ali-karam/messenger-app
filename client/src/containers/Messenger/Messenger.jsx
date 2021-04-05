@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useHistory, Route } from 'react-router-dom';
 import axios from 'axios';
-import { CircularProgress, Grid, InputBase, InputAdornment, Typography } from '@material-ui/core';
+import { CircularProgress, Grid, InputBase, InputAdornment, Typography, 
+  IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
+import AuthContext from '../../context/auth-context';
+import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 import ConversationPreview from '../../components/ConversationPreview/ConversationPreview';
 import UserCard from '../../components/UserCard/UserCard';
 import Conversation from './Conversation/Conversation';
-import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 import messengerStyle from './MessengerStyle';
 
 const Messenger = ({ match }) => {
@@ -19,8 +22,10 @@ const Messenger = ({ match }) => {
   const [convoPageNum, setConvoPageNum] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const history = useHistory();
+  const authContext = useContext(AuthContext);
   const classes = messengerStyle();
 
   useEffect(() => {
@@ -66,6 +71,19 @@ const Messenger = ({ match }) => {
       });
   }, [convoPageNum]);
 
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`/users/${authContext.user.id}`)
+      .then(res => {
+        setCurrentUser(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      })
+  }, [authContext]);
+
   const observer = useRef();
   const convoObserver = useRef();
   const lastUserRef = useIntersectionObserver(observer, setPageNum, hasMoreUsers, loading);
@@ -86,7 +104,7 @@ const Messenger = ({ match }) => {
       .then(res => {
         const newConvo = {
           _id: res.data.conversationId,
-          users: [user]
+          users: [res.data.otherUser]
         };
         if(res.data.lastMesssage) {
           newConvo.lastMessage = res.data.lastMessage;
@@ -114,6 +132,7 @@ const Messenger = ({ match }) => {
             lastRef={lastConvoRef}
             key={convo._id} 
             convo={convo} 
+            isOnline={false}
             click={() => convoSelectedHandler(convo._id)} 
           />);
       } else {
@@ -121,6 +140,7 @@ const Messenger = ({ match }) => {
           <ConversationPreview 
             key={convo._id} 
             convo={convo} 
+            isOnline={false}
             click={() => convoSelectedHandler(convo._id)} 
           />);
       }
@@ -135,11 +155,19 @@ const Messenger = ({ match }) => {
             lastRef={lastUserRef} 
             key={user._id} 
             user={user} 
+            isOnline={true}
             click={() => personSelectedHandler(user)}
           />
         );
       } else {
-        return <UserCard key={user._id} user={user} click={() => personSelectedHandler(user)}/>;
+        return (
+          <UserCard 
+            key={user._id} 
+            user={user} 
+            isOnline={true} 
+            click={() => personSelectedHandler(user)}
+          />
+        );
       }
     })
   );
@@ -147,6 +175,7 @@ const Messenger = ({ match }) => {
     <Grid container component='main' className={classes.root}>
       <Grid item sm={3} md={3}>
         <div className={classes.sideBar}>
+          {currentUser ? <UserCard user={currentUser} currentUser isOnline={true} /> : null}
           <Typography variant='h5' className={classes.title}>Chats</Typography>
           <InputBase
             className={classes.searchBar}
@@ -154,16 +183,23 @@ const Messenger = ({ match }) => {
             value={query} 
             onChange={searchHandler}
             placeholder='Search'
-            startAdornment= {(
+            startAdornment={(
               <InputAdornment position='start'>
                 <SearchIcon fontSize='small' />
               </InputAdornment>
             )}
+            endAdornment={ query ? (
+              <InputAdornment position='end'>
+                <IconButton onClick={() => setQuery('')}>
+                  <ClearIcon fontSize='small' />
+                </IconButton>
+              </InputAdornment>
+            ) : null}
           />
-          {loading ? <CircularProgress size={30} className={classes.loading}/> : null}
           <div className={classes.conversations}>
             {isSearching ? renderUsers() : conversationDisplay}
           </div>
+          {loading ? <CircularProgress size={30} className={classes.loading}/> : null}
         </div>
       </Grid>
       <Grid item sm={9} md={9}>
