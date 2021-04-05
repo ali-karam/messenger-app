@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Typography } from '@material-ui/core';
-import UserAvatar from '../UI/UserAvatar/UserAvatar';
+import UserAvatar from '../../UI/UserAvatar/UserAvatar';
 import conversationPrevStyle from './ConversationPrevStyle';
 
 const displayLastMessage = (message) => {

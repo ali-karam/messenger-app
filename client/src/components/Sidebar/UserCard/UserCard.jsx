@@ -2,8 +2,8 @@ import React, { useContext, useState } from 'react';
 import { Card, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
-import AuthContext from '../../context/auth-context';
-import UserAvatar from '../UI/UserAvatar/UserAvatar';
+import AuthContext from '../../../context/auth-context';
+import UserAvatar from '../../UI/UserAvatar/UserAvatar';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import userCardStyle from './UserCardStyle';
 

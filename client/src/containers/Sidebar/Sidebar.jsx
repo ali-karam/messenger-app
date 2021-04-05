@@ -5,10 +5,10 @@ import { CircularProgress, Grid, InputBase, InputAdornment, Typography,
   IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-import AuthContext from '../../../context/auth-context';
-import useIntersectionObserver from '../../../customHooks/useIntersectionObserver';
-import ConversationPreview from '../../../components/ConversationPreview/ConversationPreview';
-import UserCard from '../../../components/UserCard/UserCard';
+import AuthContext from '../../context/auth-context';
+import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
+import ConversationPreview from '../../components/Sidebar/ConversationPreview/ConversationPreview';
+import UserCard from '../../components/Sidebar/UserCard/UserCard';
 import Conversation from '../Conversation/Conversation';
 import sidebarStyle from './SidebarStyle';
 

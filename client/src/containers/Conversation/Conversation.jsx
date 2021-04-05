@@ -3,11 +3,11 @@ import axios from 'axios';
 import { CircularProgress, ClickAwayListener } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import Picker from 'emoji-picker-react';
-import useIntersectionObserver from '../../../customHooks/useIntersectionObserver';
-import Message from '../../../components/Message/Message';
-import MessageBar from '../../../components/MessageBar/MessageBar';
-import PopupMessage from '../../../components/UI/PopupMessage/PopupMessage';
-import OtherUserBanner from '../../../components/OtherUserBanner/OtherUserBanner';
+import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
+import Message from '../../components/Conversation/Message/Message';
+import MessageBar from '../../components/Conversation/MessageBar/MessageBar';
+import PopupMessage from '../../components/UI/PopupMessage/PopupMessage';
+import OtherUserBanner from '../../components/Conversation/OtherUserBanner/OtherUserBanner';
 import conversationStyle from './ConversationStyle';
 
 const Conversation = () => {

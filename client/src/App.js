@@ -7,7 +7,7 @@ import Auth from "./containers/Auth/Auth";
 import Dashboard from "./containers/Dashboard/Dashboard";
 import AuthContext from "./context/auth-context";
 import ProtectedRoute from "./hoc/ProtectedRoute";
-import Sidebar from "./containers/Messenger/Sidebar/Sidebar";
+import Sidebar from "./containers/Sidebar/Sidebar";
 
 import "./App.css";
 
