@@ -1,19 +1,16 @@
 import React from 'react';
-import { Card, Avatar, Typography } from '@material-ui/core';
+import { Card, Typography } from '@material-ui/core';
+import UserAvatar from '../UI/UserAvatar/UserAvatar';
 import conversationPrevStyle from './ConversationPrevStyle';
 
 const displayLastMessage = (message) => {
-  const base64Matcher = new RegExp(
-    '(?:[A-Za-z0-9+/]{4}\\n?)*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)'
-  );
-
-  if (base64Matcher.test(message)) {
-    message = 'sent a photo';
+  if (message.img) {
+    return 'Sent a photo';
   }
-  return message;
+  return message.text;
 };
 
-const ConversationPreview = ({ convo, click, lastRef }) => {
+const ConversationPreview = ({ convo, click, lastRef, isOnline }) => {
   const classes = conversationPrevStyle();
   const otherUser = convo.users[0];
   let lastMessage = null;
@@ -23,14 +20,12 @@ const ConversationPreview = ({ convo, click, lastRef }) => {
     let creator = 'You';
     let read = true;
     if (convo.lastMessage.creator === otherUser._id) {
-      creator =
-          otherUser.username.charAt(0).toUpperCase() +
-          otherUser.username.slice(1);
+      creator = otherUser.username.charAt(0).toUpperCase() + otherUser.username.slice(1);
       read = convo.lastMessage.read;
     }
     lastMessage = (
-      <Typography className={!read ? `${classes.unread} ${classes.lastMessage}` : classes.lastMessage}>
-        {creator}: {displayLastMessage(convo.lastMessage.message)}
+      <Typography className={`${classes.lastMessage} ${!read ? classes.unread : null}`}>
+        {creator}: {displayLastMessage(convo.lastMessage)}
       </Typography>
     );
   }
@@ -39,13 +34,7 @@ const ConversationPreview = ({ convo, click, lastRef }) => {
   }
   return (
     <Card className={classes.card} onClick={click} ref={lastRef}>
-      <Avatar
-        className={classes.avatar}
-        alt={otherUser.username}
-        src={otherUser.avatar ? `data:image/jpeg;base64,${otherUser.avatar}` : null}
-      >
-        {!otherUser.avatar ? otherUser.username.charAt(0).toUpperCase() : null}
-      </Avatar>
+      <UserAvatar user={otherUser} className={classes.avatar} isOnline={isOnline} />
       <div className={classes.info}>
         <Typography className={classes.username}>{otherUser.username}</Typography>
         {lastMessage}
