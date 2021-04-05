@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const conversationStyle = makeStyles(theme => ({
+const conversationStyle = makeStyles((theme) => ({
   root: {
     maxHeight: '100vh',
     display: 'flex',
@@ -18,8 +18,8 @@ const conversationStyle = makeStyles(theme => ({
     paddingRight: 13
   },
   emojiSelector: {
-    position: 'absolute', 
-    alignSelf: 'flex-end', 
+    position: 'absolute',
+    alignSelf: 'flex-end',
     marginRight: '85px'
   },
   loading: {

@@ -6,13 +6,13 @@ import AuthContext from '../../../context/auth-context';
 import UserAvatar from '../../UI/UserAvatar/UserAvatar';
 import messageStyle from './MessageStyle';
 
-const displayTimestamp = date => {
+const displayTimestamp = (date) => {
   const isToday = moment(date).isSame(new Date(), 'day');
   const isWeek = moment(date).isSame(new Date(), 'week');
-  if(isToday) {
+  if (isToday) {
     return moment(date).format('h:mm a');
   }
-  if(isWeek) {
+  if (isWeek) {
     return moment(date).format('dddd h:mm a');
   }
   return moment(date).format('MMM DD, YYYY [at] h:mm a');
@@ -23,12 +23,12 @@ const Message = ({ message, lastRef, otherUser, latestMsg }) => {
   const classes = messageStyle();
   const isLoggedInUser = authContext.user.id === message.creator._id;
 
-  const displayMessage = message => {
-    if(message.img) {
+  const displayMessage = (message) => {
+    if (message.img) {
       return (
-        <img 
-          src={bufferToImgSrc(message.img)} 
-          alt={`${otherUser.username} sent`} 
+        <img
+          src={bufferToImgSrc(message.img)}
+          alt={`${otherUser.username} sent`}
           className={classes.messageImg}
         />
       );
@@ -41,27 +41,25 @@ const Message = ({ message, lastRef, otherUser, latestMsg }) => {
   };
 
   let readAvatar;
-  if(latestMsg && isLoggedInUser && message.read) {
+  if (latestMsg && isLoggedInUser && message.read) {
     readAvatar = <UserAvatar user={otherUser} className={classes.avatar} />;
   }
-  
+
   let messageDisplay = (
     <div className={classes.userContent}>
-      <Typography className={classes.messageInfo}>
-        {displayTimestamp(message.createdAt)}
-      </Typography>
+      <Typography className={classes.messageInfo}>{displayTimestamp(message.createdAt)}</Typography>
       {displayMessage(message)}
       {readAvatar}
     </div>
   );
-  
-  if(!isLoggedInUser) {
+
+  if (!isLoggedInUser) {
     messageDisplay = (
       <div className={classes.otherUserContent}>
         <UserAvatar user={otherUser} className={classes.avatar} />
         <div>
           <Typography className={classes.messageInfo}>
-            <span style={{textTransform: 'capitalize'}}>{otherUser.username} </span> 
+            <span style={{ textTransform: 'capitalize' }}>{otherUser.username} </span>
             {displayTimestamp(message.createdAt)}
           </Typography>
           {displayMessage(message)}

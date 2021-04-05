@@ -29,7 +29,7 @@ const ConversationPreview = ({ convo, click, lastRef, isOnline }) => {
       </Typography>
     );
   }
-  if(convo.numUnread > 0) {
+  if (convo.numUnread > 0) {
     badge = <div className={classes.notification}>{convo.numUnread}</div>;
   }
   return (

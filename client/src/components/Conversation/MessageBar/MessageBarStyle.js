@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const messageBarStyle = makeStyles(theme => ({
+const messageBarStyle = makeStyles((theme) => ({
   messageBar: {
     margin: '10px 10px 30px 0',
     width: '90%',

@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const sidebarStyle = makeStyles(theme => ({
+const sidebarStyle = makeStyles((theme) => ({
   root: {
     minHeight: '100vh'
   },

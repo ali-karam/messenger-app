@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const userCardStyle = makeStyles(theme => ({
+const userCardStyle = makeStyles((theme) => ({
   card: {
     padding: '0px 10px',
     minHeight: 75,
@@ -27,7 +27,7 @@ const userCardStyle = makeStyles(theme => ({
   },
   badge: {
     color: 'white',
-    backgroundColor: "#00AFD7"
+    backgroundColor: '#00AFD7'
   }
 }));
 

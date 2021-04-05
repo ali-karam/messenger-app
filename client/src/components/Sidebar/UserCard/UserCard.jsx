@@ -21,8 +21,8 @@ const UserCard = ({ user, click, lastRef, currentUser, isOnline }) => {
 
   const optionIcon = (
     <>
-      <IconButton 
-        className={classes.optionIcon} 
+      <IconButton
+        className={classes.optionIcon}
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
         <MoreHorizIcon />
@@ -34,9 +34,9 @@ const UserCard = ({ user, click, lastRef, currentUser, isOnline }) => {
     </>
   );
   return (
-    <Card 
-      onClick={click} 
-      ref={lastRef} 
+    <Card
+      onClick={click}
+      ref={lastRef}
       className={`${classes.card} ${currentUser ? classes.currentUser : null}`}
     >
       <UserAvatar user={user} className={classes.avatar} isOnline={isOnline} />

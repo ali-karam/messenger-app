@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const conversationPrevStyle = makeStyles(theme => ({
+const conversationPrevStyle = makeStyles((theme) => ({
   card: {
     minHeight: 75,
     boxShadow: '1px 1px 2px #faf7f7',

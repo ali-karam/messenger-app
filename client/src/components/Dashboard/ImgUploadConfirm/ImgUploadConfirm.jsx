@@ -7,13 +7,13 @@ const ImgUploadConfirm = React.forwardRef(({ src, yesClick, noClick }, ref) => {
 
   return (
     <div className={classes.root} ref={ref} tabIndex={-1}>
-      <img src={src ? URL.createObjectURL(src) : null} alt='Preview' className={classes.img} />
+      <img src={src ? URL.createObjectURL(src) : null} alt="Preview" className={classes.img} />
       <Typography>Would you like to upload this image as your avatar?</Typography>
       <div>
-        <Button variant='contained' color='primary' className={classes.button} onClick={yesClick}>
+        <Button variant="contained" color="primary" className={classes.button} onClick={yesClick}>
           Yes
         </Button>
-        <Button variant='contained' color='secondary' className={classes.button} onClick={noClick}>
+        <Button variant="contained" color="secondary" className={classes.button} onClick={noClick}>
           No
         </Button>
       </div>

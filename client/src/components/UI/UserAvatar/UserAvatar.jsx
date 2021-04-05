@@ -7,7 +7,7 @@ const UserAvatar = ({ user, className, isOnline }) => {
   const classes = userAvatarStyle();
 
   let status;
-  if(isOnline !== undefined) {
+  if (isOnline !== undefined) {
     status = <span className={`${classes.status} ${isOnline ? classes.online : null}`}></span>;
   }
   return (

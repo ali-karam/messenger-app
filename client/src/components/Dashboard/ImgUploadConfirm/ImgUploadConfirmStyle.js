@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const imgUploadConfirmStyle = makeStyles(theme => ({
+const imgUploadConfirmStyle = makeStyles((theme) => ({
   root: {
     display: 'flex',
     backgroundColor: 'white',

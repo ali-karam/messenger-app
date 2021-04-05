@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const otherUserBannerStyle = makeStyles(theme => ({
+const otherUserBannerStyle = makeStyles((theme) => ({
   root: {
     padding: '0px 10px',
     minHeight: 90,

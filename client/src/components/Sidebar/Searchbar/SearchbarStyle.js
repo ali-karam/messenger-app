@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const searchbarStyle = makeStyles(theme => ({
+const searchbarStyle = makeStyles((theme) => ({
   searchBar: {
     margin: '12px 0',
     width: '90%',

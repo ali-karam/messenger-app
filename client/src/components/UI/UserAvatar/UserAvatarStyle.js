@@ -1,14 +1,14 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const userAvatarStyle = makeStyles(theme => ({
+const userAvatarStyle = makeStyles((theme) => ({
   default: {
     backgroundColor: theme.palette.primary.main,
     height: 50,
     width: 50
   },
   status: {
-    position: 'relative', 
-    right: 18, 
+    position: 'relative',
+    right: 18,
     top: 18,
     backgroundColor: '#d2dbec',
     height: 8,

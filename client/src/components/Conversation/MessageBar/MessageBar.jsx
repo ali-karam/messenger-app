@@ -9,36 +9,31 @@ const MessageBar = ({ text, inputKeyDown, inputChange, emojiBtnClick, fileChange
   const fileUploadBtnRef = useRef();
 
   const controls = (
-    <InputAdornment position='end'>
+    <InputAdornment position="end">
       <IconButton onClick={emojiBtnClick}>
         <EmojiEmotionsIcon />
       </IconButton>
       <IconButton onClick={() => fileUploadBtnRef.current.click()}>
-        <PhotoLibraryIcon/>
+        <PhotoLibraryIcon />
       </IconButton>
     </InputAdornment>
   );
   return (
     <>
       <InputBase
-      className={classes.messageBar}
-      placeholder='Type something...'
-      autoFocus
-      multiline
-      variant='outlined'
-      rowsMax={4}
-      spellCheck
-      value={text}
-      onKeyDown={inputKeyDown}
-      onChange={inputChange}
-      endAdornment={controls}
+        className={classes.messageBar}
+        placeholder="Type something..."
+        autoFocus
+        multiline
+        variant="outlined"
+        rowsMax={4}
+        spellCheck
+        value={text}
+        onKeyDown={inputKeyDown}
+        onChange={inputChange}
+        endAdornment={controls}
       />
-      <input 
-        type="file" 
-        onChange={fileChange} 
-        style={{display: "none"}}
-        ref={fileUploadBtnRef}
-      />
+      <input type="file" onChange={fileChange} style={{ display: 'none' }} ref={fileUploadBtnRef} />
     </>
   );
 };

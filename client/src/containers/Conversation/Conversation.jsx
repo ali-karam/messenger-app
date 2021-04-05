@@ -26,14 +26,15 @@ const Conversation = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`/conversations/${id}?page=${pageNum}`)
-      .then(res => {
+    axios
+      .get(`/conversations/${id}?page=${pageNum}`)
+      .then((res) => {
         setOtherUser(res.data.otherUser);
-        setMessages(prevMessages => [...prevMessages, ...res.data.messages]);
+        setMessages((prevMessages) => [...prevMessages, ...res.data.messages]);
         setHasMore(res.data.hasNext);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         setLoading(false);
       });
@@ -46,53 +47,54 @@ const Conversation = () => {
   const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
 
   let messagesDisplay;
-  if(messages) {
+  if (messages) {
     messagesDisplay = messages.map((message, index) => {
-      if(messages.length === index + 1) {
+      if (messages.length === index + 1) {
         return (
           <Message key={message._id} lastRef={lastMsgRef} message={message} otherUser={otherUser} />
         );
       }
       return (
-        <Message 
-          key={message._id} 
-          message={message} 
-          otherUser={otherUser} 
-          latestMsg={index === 0} 
+        <Message
+          key={message._id}
+          message={message}
+          otherUser={otherUser}
+          latestMsg={index === 0}
         />
       );
     });
   }
 
-  const sendMsgToServer = data => {
-    axios.post(`/conversations/${id}`, data)
-    .then(res => {
-      setMessages(prevMessages => {
-        prevMessages.pop();
-        return [res.data, ...prevMessages];
+  const sendMsgToServer = (data) => {
+    axios
+      .post(`/conversations/${id}`, data)
+      .then((res) => {
+        setMessages((prevMessages) => {
+          prevMessages.pop();
+          return [res.data, ...prevMessages];
+        });
+      })
+      .catch((err) => {
+        setErrorMsg('Oops! Something went wrong');
       });
-    })
-    .catch(err => {
-      setErrorMsg('Oops! Something went wrong');
-    });
   };
 
-  const enterHandler = event => {
-    if(event.key === 'Enter' && !event.shiftKey) {
+  const enterHandler = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      
-      if(text.trim() !== '') {
+
+      if (text.trim() !== '') {
         sendMsgToServer({ message: text });
       }
       setText('');
     }
   };
 
-  const fileSelectedHandler = event => {
+  const fileSelectedHandler = (event) => {
     const file = event.target.files[0];
-    if(file && file.size > 1000000) {
+    if (file && file.size > 1000000) {
       setErrorMsg('File too large. Max size 1MB');
-    } else if(file && !file.type.match(/^image\/(jpe?g|png)$/)) {
+    } else if (file && !file.type.match(/^image\/(jpe?g|png)$/)) {
       setErrorMsg('Image must be either a png, jpg, or jpeg');
     } else {
       setErrorMsg('');
@@ -103,11 +105,11 @@ const Conversation = () => {
   };
 
   const emojiSelectedHandler = (event, emojiObj) => {
-    setText(prevText => prevText.concat(emojiObj.emoji));
+    setText((prevText) => prevText.concat(emojiObj.emoji));
   };
 
   const emojiBtnClickHandler = () => {
-    setEmojiPickerIsShowing(prevIsShowing => !prevIsShowing);
+    setEmojiPickerIsShowing((prevIsShowing) => !prevIsShowing);
   };
 
   const emojiSelector = (
@@ -117,26 +119,26 @@ const Conversation = () => {
       </div>
     </ClickAwayListener>
   );
-  
+
   return (
     <div className={classes.root}>
       {otherUser ? <OtherUserBanner username={otherUser.username} isOnline /> : null}
-      {loading ? <CircularProgress size={30} className={classes.loading}/> : null}
+      {loading ? <CircularProgress size={30} className={classes.loading} /> : null}
       <div className={classes.messages}>
         {messagesDisplay}
         {emojiPickerIsShowing ? emojiSelector : null}
       </div>
-      <MessageBar 
-        text={text} 
-        inputKeyDown={enterHandler} 
-        inputChange={event => setText(event.target.value)}
+      <MessageBar
+        text={text}
+        inputKeyDown={enterHandler}
+        inputChange={(event) => setText(event.target.value)}
         emojiBtnClick={emojiBtnClickHandler}
         fileChange={fileSelectedHandler}
       />
-      <PopupMessage 
-        open={errorMsg !== ''} 
-        handleClose={() => setErrorMsg('')} 
-        type='error' 
+      <PopupMessage
+        open={errorMsg !== ''}
+        handleClose={() => setErrorMsg('')}
+        type="error"
         message={errorMsg}
       />
     </div>

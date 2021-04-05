@@ -21,22 +21,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`/users/${authContext.user.id}`)
-      .then(res => {
+    axios
+      .get(`/users/${authContext.user.id}`)
+      .then((res) => {
         setUser(res.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setErrorMsg('Oops! Something went wrong');
         setLoading(false);
       });
   }, [authContext]);
 
-  const fileSelectedHandler = event => {
+  const fileSelectedHandler = (event) => {
     const file = event.target.files[0];
-    if(file && file.size > 1000000) {
+    if (file && file.size > 1000000) {
       setErrorMsg('File too large. Max size 1MB');
-    } else if(file && !file.type.match(/^image\/(jpe?g|png)$/)) {
+    } else if (file && !file.type.match(/^image\/(jpe?g|png)$/)) {
       setErrorMsg('Image must be either a png, jpg, or jpeg');
     } else {
       setSelectedFile(file);
@@ -47,29 +48,30 @@ const Dashboard = () => {
   const fileUploadHandler = () => {
     setLoading(true);
     const fd = new FormData();
-    fd.append('avatar', selectedFile)
-    axios.patch(`/users/${authContext.user.id}`, fd)
-      .then(res => {
+    fd.append('avatar', selectedFile);
+    axios
+      .patch(`/users/${authContext.user.id}`, fd)
+      .then((res) => {
         setUser(res.data);
         setSelectedFile('');
         setSuccess(true);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setErrorMsg('Oops! Something went wrong');
         setLoading(false);
       });
   };
-  
+
   let userContent;
-  if(user) {
+  if (user) {
     userContent = (
       <>
         <Typography className={classes.username}>{user.username}</Typography>
         <UserAvatar className={classes.avatar} user={user} />
-        <Button 
-          variant='contained' 
-          color='primary' 
+        <Button
+          variant="contained"
+          color="primary"
           className={classes.changeAvatarBtn}
           onClick={() => fileSelectBtnRef.current.click()}
         >
@@ -84,29 +86,29 @@ const Dashboard = () => {
       <div className={classes.content}>
         {userContent}
         {loading ? <CircularProgress /> : null}
-        <input 
-          type='file' 
-          style={{display: 'none'}} 
-          ref={fileSelectBtnRef} 
+        <input
+          type="file"
+          style={{ display: 'none' }}
+          ref={fileSelectBtnRef}
           onChange={fileSelectedHandler}
         />
         <Modal open={selectedFile !== ''} onClose={() => setSelectedFile('')}>
-          <ImgUploadConfirm 
-            src={selectedFile} 
+          <ImgUploadConfirm
+            src={selectedFile}
             noClick={() => setSelectedFile('')}
             yesClick={fileUploadHandler}
           />
-        </Modal> 
-        <PopupMessage 
-          type='success' 
-          open={success} 
-          handleClose={() => setSuccess(false)} 
-          message='Avatar Changed!'
+        </Modal>
+        <PopupMessage
+          type="success"
+          open={success}
+          handleClose={() => setSuccess(false)}
+          message="Avatar Changed!"
         />
-        <PopupMessage 
-          type='error' 
-          open={errorMsg !== ''} 
-          handleClose={() => setErrorMsg('')} 
+        <PopupMessage
+          type="error"
+          open={errorMsg !== ''}
+          handleClose={() => setErrorMsg('')}
           message={errorMsg}
         />
       </div>

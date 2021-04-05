@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const messageStyle = makeStyles(theme => ({
+const messageStyle = makeStyles((theme) => ({
   userContent: {
     marginBottom: 12,
     display: 'flex',

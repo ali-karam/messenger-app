@@ -10,22 +10,24 @@ const Searchbar = ({ query, searchHandler, clearHandler }) => {
     <>
       <InputBase
         className={classes.searchBar}
-        variant='outlined' 
-        value={query} 
+        variant="outlined"
+        value={query}
         onChange={searchHandler}
-        placeholder='Search'
-        startAdornment={(
-          <InputAdornment position='start'>
-            <SearchIcon fontSize='small' />
+        placeholder="Search"
+        startAdornment={
+          <InputAdornment position="start">
+            <SearchIcon fontSize="small" />
           </InputAdornment>
-        )}
-        endAdornment={ query ? (
-          <InputAdornment position='end'>
-            <IconButton onClick={clearHandler}>
-              <ClearIcon fontSize='small' />
-            </IconButton>
-          </InputAdornment>
-        ) : null}
+        }
+        endAdornment={
+          query ? (
+            <InputAdornment position="end">
+              <IconButton onClick={clearHandler}>
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          ) : null
+        }
       />
     </>
   );

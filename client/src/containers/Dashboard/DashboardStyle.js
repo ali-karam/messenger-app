@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 
-const dashboardStyle = makeStyles(theme => ({
+const dashboardStyle = makeStyles((theme) => ({
   content: {
     margin: 20,
     display: 'flex',

@@ -31,30 +31,36 @@ const Sidebar = ({ match }) => {
   const observer = useRef();
   const convoObserver = useRef();
   const lastUserRef = useIntersectionObserver(observer, setPageNum, hasMoreUsers, loading);
-  const lastConvoRef = useIntersectionObserver(convoObserver, setConvoPageNum, hasMoreConvos, 
-    loading);
+  const lastConvoRef = useIntersectionObserver(
+    convoObserver,
+    setConvoPageNum,
+    hasMoreConvos,
+    loading
+  );
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`/users/${authContext.user.id}`)
-      .then(res => {
+    axios
+      .get(`/users/${authContext.user.id}`)
+      .then((res) => {
         setCurrentUser(res.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         errorHandler();
       });
   }, [authContext]);
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`/conversations?page=${convoPageNum}`)
-      .then(res => {
-        setConversations(prevConvos => [...prevConvos, ...res.data.conversations]);
+    axios
+      .get(`/conversations?page=${convoPageNum}`)
+      .then((res) => {
+        setConversations((prevConvos) => [...prevConvos, ...res.data.conversations]);
         setHasMoreConvos(res.data.hasNext);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         errorHandler();
       });
   }, [convoPageNum]);
@@ -64,18 +70,19 @@ const Sidebar = ({ match }) => {
       setIsSearching(false);
       setLoading(false);
       return;
-    };
+    }
     setIsSearching(true);
     setLoading(true);
 
     const timeoutId = setTimeout(() => {
-      axios.get(`/users?username=${query}&page=${userPageNum}`)
-        .then(res => {
-          setUsers(prevUsers => [...prevUsers, ...res.data.users]);
+      axios
+        .get(`/users?username=${query}&page=${userPageNum}`)
+        .then((res) => {
+          setUsers((prevUsers) => [...prevUsers, ...res.data.users]);
           setHasMoreUsers(res.data.hasNext);
           setLoading(false);
         })
-        .catch(err => {
+        .catch((err) => {
           errorHandler();
         });
     }, 1000);
@@ -92,28 +99,29 @@ const Sidebar = ({ match }) => {
     setLoading(false);
   };
 
-  const searchHandler = event => {
+  const searchHandler = (event) => {
     setQuery(event.target.value);
     setPageNum(1);
   };
 
-  const convoSelectedHandler = id => {
+  const convoSelectedHandler = (id) => {
     setQuery('');
     history.push(`/messenger/${id}`);
   };
 
-  const personSelectedHandler = user => {
-    axios.post('/conversations', { userId: user._id })
-      .then(res => {
+  const personSelectedHandler = (user) => {
+    axios
+      .post('/conversations', { userId: user._id })
+      .then((res) => {
         const newConvo = {
           _id: res.data.conversationId,
           users: [res.data.otherUser]
         };
-        if(res.data.lastMesssage) {
+        if (res.data.lastMesssage) {
           newConvo.lastMessage = res.data.lastMessage;
         }
-        setConversations(prevConvos => {
-          if(prevConvos.some(convo => convo._id === res.data.conversationId)) {
+        setConversations((prevConvos) => {
+          if (prevConvos.some((convo) => convo._id === res.data.conversationId)) {
             return prevConvos;
           }
           return [newConvo, ...prevConvos];
@@ -121,75 +129,81 @@ const Sidebar = ({ match }) => {
         setQuery('');
         history.push(`/messenger/${res.data.conversationId}`);
       })
-      .catch(err => {
+      .catch((err) => {
         setErrorMsg('Oops! Something went wrong');
       });
   };
 
-  const renderUsers = () => (
-    users.map((user, index) => {
-      if(users.length === index + 1) {
+  const renderUsers = () => {
+    return users.map((user, index) => {
+      if (users.length === index + 1) {
         return (
-          <UserCard 
-            lastRef={lastUserRef} 
-            key={user._id} 
-            user={user} 
+          <UserCard
+            lastRef={lastUserRef}
+            key={user._id}
+            user={user}
             isOnline={true}
             click={() => personSelectedHandler(user)}
-          />);
-      } 
+          />
+        );
+      }
       return (
-        <UserCard 
-          key={user._id} 
-          user={user} 
-          isOnline={true} 
+        <UserCard
+          key={user._id}
+          user={user}
+          isOnline={true}
           click={() => personSelectedHandler(user)}
-        />);
-    })
-  );
+        />
+      );
+    });
+  };
 
   let conversationDisplay = null;
-  if(conversations && !isSearching) {
+  if (conversations && !isSearching) {
     conversationDisplay = conversations.map((convo, index) => {
-      if(conversations.length === index + 1) {
+      if (conversations.length === index + 1) {
         return (
-          <ConversationPreview 
+          <ConversationPreview
             lastRef={lastConvoRef}
-            key={convo._id} 
-            convo={convo} 
+            key={convo._id}
+            convo={convo}
             isOnline={false}
-            click={() => convoSelectedHandler(convo._id)} 
-          />);
-      } 
+            click={() => convoSelectedHandler(convo._id)}
+          />
+        );
+      }
       return (
-        <ConversationPreview 
-          key={convo._id} 
-          convo={convo} 
+        <ConversationPreview
+          key={convo._id}
+          convo={convo}
           isOnline={false}
-          click={() => convoSelectedHandler(convo._id)} 
-        />);
+          click={() => convoSelectedHandler(convo._id)}
+        />
+      );
     });
   }
   return (
-    <Grid container component='main' className={classes.root}>
+    <Grid container component="main" className={classes.root}>
       <Grid item sm={3} md={3}>
         <div className={classes.sideBar}>
           {currentUser ? <UserCard user={currentUser} currentUser isOnline={true} /> : null}
-          <Typography variant='h5' className={classes.title}>Chats</Typography>
-          <Searchbar 
-            searchHandler={searchHandler} 
-            clearHandler={() => setQuery('')} 
+          <Typography variant="h5" className={classes.title}>
+            Chats
+          </Typography>
+          <Searchbar
+            searchHandler={searchHandler}
+            clearHandler={() => setQuery('')}
             query={query}
           />
           <div className={classes.conversations}>
             {isSearching ? renderUsers() : conversationDisplay}
           </div>
-          {loading ? <CircularProgress size={30} className={classes.loading}/> : null}
+          {loading ? <CircularProgress size={30} className={classes.loading} /> : null}
         </div>
-        <PopupMessage 
-          open={errorMsg !== ''} 
-          handleClose={() => setErrorMsg('')} 
-          type='error' 
+        <PopupMessage
+          open={errorMsg !== ''}
+          handleClose={() => setErrorMsg('')}
+          type="error"
           message={errorMsg}
         />
       </Grid>
