@@ -184,7 +184,7 @@ const Sidebar = ({ match }) => {
   }
   return (
     <Grid container component="main" className={classes.root}>
-      <Grid item sm={3} md={3}>
+      <Grid item xs={isSearching ? 9 : 3} md={3}>
         <div className={classes.sideBar}>
           {currentUser ? <UserCard user={currentUser} currentUser isOnline={true} /> : null}
           <Typography variant="h5" className={classes.title}>
@@ -207,7 +207,7 @@ const Sidebar = ({ match }) => {
           message={errorMsg}
         />
       </Grid>
-      <Grid item sm={9} md={9}>
+      <Grid item xs={isSearching ? 3 : 9} md={9}>
         <Route path={match.url + '/:id'} exact component={Conversation} />
       </Grid>
     </Grid>

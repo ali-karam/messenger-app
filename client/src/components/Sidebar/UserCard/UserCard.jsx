@@ -19,10 +19,10 @@ const UserCard = ({ user, click, lastRef, currentUser, isOnline }) => {
     history.push('/auth');
   };
 
-  const optionIcon = (
+  const optionBtn = (
     <>
       <IconButton
-        className={classes.optionIcon}
+        className={classes.optionBtn}
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
         <MoreHorizIcon />
@@ -41,7 +41,7 @@ const UserCard = ({ user, click, lastRef, currentUser, isOnline }) => {
     >
       <UserAvatar user={user} className={classes.avatar} isOnline={isOnline} />
       <Typography className={classes.username}>{user.username}</Typography>
-      {currentUser ? optionIcon : null}
+      {currentUser ? optionBtn : null}
     </Card>
   );
 };

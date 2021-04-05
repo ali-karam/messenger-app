@@ -19,9 +19,32 @@ const userCardStyle = makeStyles((theme) => ({
   },
   currentUser: {
     boxShadow: 'none',
-    width: '90%'
+    width: '90%',
+    padding: 0,
+    '@media (max-width:600px)': {
+      '& $username': {
+        display: 'none'
+      },
+      '& $optionBtn': {
+        paddingLeft: 0,
+        position: 'relative',
+        right: 11
+      },
+      '& $avatar': {
+        marginRight: 0
+      }
+    },
+    '@media (max-width:365px)': {
+      flexWrap: 'wrap',
+      '& $optionBtn': {
+        right: 0,
+        margin: '0 auto',
+        paddingTop: 0,
+        paddingBottom: 0
+      }
+    }
   },
-  optionIcon: {
+  optionBtn: {
     marginLeft: 'auto',
     marginRight: 0
   },

@@ -32,9 +32,6 @@ const sidebarStyle = makeStyles((theme) => ({
   },
   loading: {
     alignSelf: 'center'
-  },
-  currentUser: {
-    width: '90%'
   }
 }));
 
