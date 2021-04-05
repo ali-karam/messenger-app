@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useHistory, Route } from 'react-router-dom';
 import axios from 'axios';
-import { CircularProgress, Grid, InputBase, InputAdornment, Typography, 
-  IconButton } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearIcon from '@material-ui/icons/Clear';
+import { CircularProgress, Grid, Typography } from '@material-ui/core';
 import AuthContext from '../../context/auth-context';
 import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 import ConversationPreview from '../../components/Sidebar/ConversationPreview/ConversationPreview';
 import UserCard from '../../components/Sidebar/UserCard/UserCard';
 import Conversation from '../Conversation/Conversation';
+import Searchbar from '../../components/Sidebar/Searchbar/Searchbar';
 import sidebarStyle from './SidebarStyle';
 
 const Sidebar = ({ match }) => {
@@ -177,24 +175,10 @@ const Sidebar = ({ match }) => {
         <div className={classes.sideBar}>
           {currentUser ? <UserCard user={currentUser} currentUser isOnline={true} /> : null}
           <Typography variant='h5' className={classes.title}>Chats</Typography>
-          <InputBase
-            className={classes.searchBar}
-            variant='outlined' 
-            value={query} 
-            onChange={searchHandler}
-            placeholder='Search'
-            startAdornment={(
-              <InputAdornment position='start'>
-                <SearchIcon fontSize='small' />
-              </InputAdornment>
-            )}
-            endAdornment={ query ? (
-              <InputAdornment position='end'>
-                <IconButton onClick={() => setQuery('')}>
-                  <ClearIcon fontSize='small' />
-                </IconButton>
-              </InputAdornment>
-            ) : null}
+          <Searchbar 
+            searchHandler={searchHandler} 
+            clearHandler={() => setQuery('')} 
+            query={query}
           />
           <div className={classes.conversations}>
             {isSearching ? renderUsers() : conversationDisplay}
