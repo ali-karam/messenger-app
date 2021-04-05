@@ -5,14 +5,14 @@ import { CircularProgress, Grid, InputBase, InputAdornment, Typography,
   IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-import AuthContext from '../../context/auth-context';
-import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
-import ConversationPreview from '../../components/ConversationPreview/ConversationPreview';
-import UserCard from '../../components/UserCard/UserCard';
-import Conversation from './Conversation/Conversation';
-import messengerStyle from './MessengerStyle';
+import AuthContext from '../../../context/auth-context';
+import useIntersectionObserver from '../../../customHooks/useIntersectionObserver';
+import ConversationPreview from '../../../components/ConversationPreview/ConversationPreview';
+import UserCard from '../../../components/UserCard/UserCard';
+import Conversation from '../Conversation/Conversation';
+import sidebarStyle from './SidebarStyle';
 
-const Messenger = ({ match }) => {
+const Sidebar = ({ match }) => {
   const [query, setQuery] = useState('');
   const [users, setUsers] = useState([]);
   const [conversations, setConversations] = useState([]);
@@ -26,7 +26,7 @@ const Messenger = ({ match }) => {
 
   const history = useHistory();
   const authContext = useContext(AuthContext);
-  const classes = messengerStyle();
+  const classes = sidebarStyle();
 
   useEffect(() => {
     if (query.trim() === '') {
@@ -209,4 +209,4 @@ const Messenger = ({ match }) => {
   );
 };
 
-export default Messenger;
+export default Sidebar;

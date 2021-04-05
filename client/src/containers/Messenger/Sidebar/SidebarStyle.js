@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-const messengerStyle = makeStyles(theme => ({
+const sidebarStyle = makeStyles(theme => ({
   root: {
     minHeight: '100vh'
   },
@@ -38,4 +38,4 @@ const messengerStyle = makeStyles(theme => ({
   }
 }));
 
-export default messengerStyle;
+export default sidebarStyle;
