@@ -10,7 +10,10 @@ const otherUserBannerStyle = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     width: '100%',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    '@media (max-width:600px)': {
+      minHeight: 70
+    }
   },
   username: {
     textTransform: 'capitalize',

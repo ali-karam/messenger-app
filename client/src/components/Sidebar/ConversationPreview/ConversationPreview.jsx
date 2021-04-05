@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Typography } from '@material-ui/core';
+import { Card, Typography, Hidden } from '@material-ui/core';
 import UserAvatar from '../../UI/UserAvatar/UserAvatar';
 import conversationPrevStyle from './ConversationPrevStyle';
 
@@ -35,11 +35,13 @@ const ConversationPreview = ({ convo, click, lastRef, isOnline }) => {
   return (
     <Card className={classes.card} onClick={click} ref={lastRef}>
       <UserAvatar user={otherUser} className={classes.avatar} isOnline={isOnline} />
-      <div className={classes.info}>
-        <Typography className={classes.username}>{otherUser.username}</Typography>
-        {lastMessage}
-      </div>
-      {badge}
+      <Hidden xsDown>
+        <div className={classes.info}>
+          <Typography className={classes.username}>{otherUser.username}</Typography>
+          {lastMessage}
+        </div>
+        {badge}
+      </Hidden>
     </Card>
   );
 };

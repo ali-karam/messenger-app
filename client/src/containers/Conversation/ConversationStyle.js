@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const conversationStyle = makeStyles((theme) => ({
   root: {
-    maxHeight: '100vh',
+    height: '100vh',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -15,12 +15,17 @@ const conversationStyle = makeStyles((theme) => ({
     flexDirection: 'column-reverse',
     alignItems: 'flex-end',
     minHeight: '65vh',
+    flexGrow: 2,
     paddingRight: 13
   },
   emojiSelector: {
     position: 'absolute',
     alignSelf: 'flex-end',
-    marginRight: '85px'
+    marginRight: '85px',
+    '@media (max-width:600px)': {
+      marginRight: 0,
+      alignSelf: 'center'
+    }
   },
   loading: {
     position: 'absolute',

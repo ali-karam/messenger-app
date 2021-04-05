@@ -7,9 +7,14 @@ const messageBarStyle = makeStyles((theme) => ({
     backgroundColor: '#f2f5fa',
     padding: '10px 20px',
     boxShadow: '1px 1px 2px #faf7f7',
-    minHeight: '12vh',
+    minHeight: '80px',
     borderRadius: '5px',
-    boxSizing: 'border-box'
+    overflow: 'hidden',
+    boxSizing: 'border-box',
+    '@media (max-width:600px)': {
+      padding: '5px 0 5px 8px',
+      minHeight: 50
+    }
   }
 }));
 
