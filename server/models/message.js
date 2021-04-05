@@ -1,38 +1,41 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
-const messageSchema = new mongoose.Schema({
-    conversation: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' },
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    text: String,
-    img: Buffer,
-    read: {
-        type: Boolean,
-        default: false
-    }
-}, { timestamps: true });
+const messageSchema = new mongoose.Schema(
+    {
+        conversation: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' },
+        creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        text: String,
+        img: Buffer,
+        read: {
+            type: Boolean,
+            default: false
+        }
+    },
+    { timestamps: true }
+);
 
 messageSchema.plugin(mongoosePaginate);
 
-messageSchema.statics.markMessagesRead = async function(conversation, user) {
+messageSchema.statics.markMessagesRead = async function (conversation, user) {
     const query = {
         conversation,
-        creator: {$ne: user}
+        creator: { $ne: user }
     };
     await Message.updateMany(query, { read: true });
 };
 
-messageSchema.statics.countUnreadMessages = async function(conversation, user) {
+messageSchema.statics.countUnreadMessages = async function (conversation, user) {
     const query = {
         conversation,
         read: false,
-        creator: {$ne: user}
+        creator: { $ne: user }
     };
     const result = await Message.countDocuments(query);
     return result;
 };
 
-messageSchema.statics.findConvoMessages = async function(conversation, page, limit) {
+messageSchema.statics.findConvoMessages = async function (conversation, page, limit) {
     const options = {
         page,
         limit,
