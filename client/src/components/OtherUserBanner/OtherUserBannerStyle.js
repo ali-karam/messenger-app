@@ -14,8 +14,8 @@ const otherUserBannerStyle = makeStyles(theme => ({
   },
   username: {
     textTransform: 'capitalize',
-    fontSize: '1.4rem',
-    marginLeft: 5
+    fontSize: '1.35rem',
+    marginLeft: 20
   },
   optionsIcon: {
     marginLeft: 'auto',
