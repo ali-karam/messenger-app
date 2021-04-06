@@ -18,4 +18,4 @@ const OtherUserBanner = ({ username, isOnline }) => {
   );
 };
 
-export default OtherUserBanner;
+export default React.memo(OtherUserBanner);
