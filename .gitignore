@@ -24,5 +24,4 @@ yarn-error.log*
 
 client/.editorconfig
 client/.prettierrc.json
-.gitignore
 server/.prettierrc.json
