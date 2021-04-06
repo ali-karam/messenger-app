@@ -71,4 +71,4 @@ const Message = ({ message, lastRef, otherUser, latestMsg, imgClicked }) => {
   return messageDisplay;
 };
 
-export default Message;
+export default React.memo(Message);

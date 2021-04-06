@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { CircularProgress, ClickAwayListener, Modal } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
@@ -86,6 +86,10 @@ const Conversation = () => {
     }
   };
 
+  const imgClickedHandler = useCallback((img) => {
+    setImgPreviewSrc(img);
+  }, []);
+
   const emojiSelector = (
     <ClickAwayListener onClickAway={() => setEmojiPickerIsShowing(false)}>
       <div className={classes.emojiSelector}>
@@ -106,7 +110,7 @@ const Conversation = () => {
             lastRef={lastMsgRef}
             message={message}
             otherUser={otherUser}
-            imgClicked={(img) => setImgPreviewSrc(img)}
+            imgClicked={imgClickedHandler}
           />
         );
       }
@@ -116,7 +120,7 @@ const Conversation = () => {
           message={message}
           otherUser={otherUser}
           latestMsg={index === 0}
-          imgClicked={(img) => setImgPreviewSrc(img)}
+          imgClicked={imgClickedHandler}
         />
       );
     });
