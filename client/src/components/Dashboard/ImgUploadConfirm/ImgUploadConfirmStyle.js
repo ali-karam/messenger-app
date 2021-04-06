@@ -14,13 +14,23 @@ const imgUploadConfirmStyle = makeStyles((theme) => ({
     alignItems: 'center',
     borderRadius: '1em',
     border: '4px solid black',
-    borderColor: theme.palette.primary.main
+    boxSizing: 'border-box',
+    padding: 10,
+    borderColor: theme.palette.primary.main,
+    '@media (max-width:600px)': {
+      width: 300,
+      height: 300
+    }
   },
   img: {
     height: 300,
     width: 300,
     borderRadius: '50%',
-    marginBottom: 10
+    marginBottom: 10,
+    '@media (max-width:600px)': {
+      width: 150,
+      height: 150
+    }
   },
   button: {
     fontWeight: 'bold',
