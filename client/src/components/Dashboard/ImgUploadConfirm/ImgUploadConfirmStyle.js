@@ -12,7 +12,7 @@ const imgUploadConfirmStyle = makeStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: '1em',
+    borderRadius: '16px',
     border: '4px solid black',
     boxSizing: 'border-box',
     padding: 10,

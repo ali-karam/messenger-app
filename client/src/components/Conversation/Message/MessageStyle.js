@@ -19,11 +19,11 @@ const messageStyle = makeStyles((theme) => ({
     display: 'flex',
     '& $messageText': {
       background: 'linear-gradient(to left, #66bdff 0%, #358dff 100%)',
-      borderRadius: '0 0.75em 0.75em',
+      borderRadius: '0 12px 12px',
       color: 'white'
     },
     '& $messageImg': {
-      borderRadius: '0 1em 1em'
+      borderRadius: '0 16px 16px'
     },
     '& div': {
       display: 'flex',
@@ -33,7 +33,7 @@ const messageStyle = makeStyles((theme) => ({
   },
   messageText: {
     backgroundColor: '#f2f5fa',
-    borderRadius: '0.75em 0.75em 0',
+    borderRadius: '12px 12px 0',
     color: '#959cb0',
     padding: 10,
     overflowWrap: 'break-word',
@@ -42,7 +42,7 @@ const messageStyle = makeStyles((theme) => ({
   messageImg: {
     maxHeight: 300,
     maxWidth: 300,
-    borderRadius: '1em 1em 0'
+    borderRadius: '16px 16px 0'
   },
   avatar: {
     marginRight: 10,

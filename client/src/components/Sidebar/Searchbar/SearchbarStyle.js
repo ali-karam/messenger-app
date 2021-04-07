@@ -8,7 +8,7 @@ const searchbarStyle = makeStyles((theme) => ({
     padding: 10,
     boxShadow: '1px 1px 2px #faf7f7',
     height: '45px',
-    borderRadius: '0.4em',
+    borderRadius: '6.4px',
     fontSize: 13
   }
 }));

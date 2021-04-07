@@ -12,13 +12,13 @@ const imagePreviewStyle = makeStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: '1em',
+    borderRadius: '16px',
     position: 'relative'
   },
   img: {
     maxWidth: '95%',
     maxHeight: '95%',
-    borderRadius: '0.3em'
+    borderRadius: '4.8px'
   },
   closeBtn: {
     position: 'absolute',
