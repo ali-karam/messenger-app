@@ -20,8 +20,7 @@ const messageStyle = makeStyles((theme) => ({
     '& $messageText': {
       background: 'linear-gradient(to left, #66bdff 0%, #358dff 100%)',
       borderRadius: '0 0.75em 0.75em',
-      color: 'white',
-      padding: 10
+      color: 'white'
     },
     '& $messageImg': {
       borderRadius: '0 1em 1em'
@@ -31,7 +30,9 @@ const messageStyle = makeStyles((theme) => ({
     backgroundColor: '#f2f5fa',
     borderRadius: '0.75em 0.75em 0',
     color: '#959cb0',
-    padding: 10
+    padding: 10,
+    overflowWrap: 'break-word',
+    maxWidth: '30vw'
   },
   messageImg: {
     maxHeight: 300,
