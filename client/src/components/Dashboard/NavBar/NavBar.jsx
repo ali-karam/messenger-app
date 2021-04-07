@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button } from '@material-ui/core';
 import AuthContext from '../../../context/auth-context';
+import { logout } from '../../../utils/AuthUtils';
 import navBarStyle from './NavBarStyle';
 
 const NavBar = () => {
@@ -10,21 +10,16 @@ const NavBar = () => {
   const authContext = useContext(AuthContext);
   const history = useHistory();
 
-  const logout = async () => {
-    await axios.post('/auth/logout');
-    authContext.user = null;
-    history.push('/auth');
-  };
   return (
-    <AppBar position='static'>
+    <AppBar position="static">
       <Toolbar className={classes.toolbar}>
         <Typography className={classes.title}>Dashboard</Typography>
         <div>
           <Button className={classes.navBtn} onClick={() => history.push('/messenger')}>
-          Messenger
+            Messenger
           </Button>
-          <Button className={classes.navBtn} onClick={logout}>
-          Logout
+          <Button className={classes.navBtn} onClick={() => logout(authContext, history)}>
+            Logout
           </Button>
         </div>
       </Toolbar>
