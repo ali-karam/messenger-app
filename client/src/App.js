@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { MuiThemeProvider, LinearProgress } from "@material-ui/core";
 import { theme } from "./themes/theme.js";
-// import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles';
 import { Route, Redirect, Switch, useHistory } from "react-router-dom";
 import axios from "axios";
 import Auth from "./containers/Auth/Auth";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./containers/Dashboard/Dashboard";
 import AuthContext from "./context/auth-context";
 import ProtectedRoute from "./hoc/ProtectedRoute";
+import Sidebar from "./containers/Sidebar/Sidebar";
 
 import "./App.css";
 
@@ -21,7 +21,7 @@ function App() {
       .then(res => {
         if(res.data) {
           setUser(res.data);
-          history.replace('/dashboard');
+          history.push(history.location.state.from);
         }
         setIsLoading(false);
       })
@@ -35,6 +35,7 @@ function App() {
     <Switch>
       <Route path="/auth" component={Auth} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/messenger" component={Sidebar}/>
       <Route exact path="/">
         <Redirect to="/auth" />
       </Route>
