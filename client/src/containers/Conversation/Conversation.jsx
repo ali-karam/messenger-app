@@ -38,7 +38,7 @@ const Conversation = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        setErrorMsg('Oops! Something went wrong');
         setLoading(false);
       });
   }, [id, pageNum]);
