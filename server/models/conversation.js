@@ -1,19 +1,21 @@
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-paginate-v2');
 
-const conversationSchema = new mongoose.Schema({
-    users: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-    lastMessage: {type: mongoose.Schema.Types.ObjectId, ref: 'Message'}
-}, { timestamps: true });
+const conversationSchema = new mongoose.Schema(
+    {
+        users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+        lastMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' }
+    },
+    { timestamps: true }
+);
 
 conversationSchema.plugin(mongoosePaginate);
 
-conversationSchema.statics.initiateConversation = async function(currentUser, otherUser) {
+conversationSchema.statics.initiateConversation = async function (currentUser, otherUser) {
     const existingConvo = await Conversation.findOne({
         users: { $all: [currentUser._id, otherUser._id] }
     });
-    
-    if(existingConvo) {
+    if (existingConvo) {
         existingConvo.status = 200;
         return existingConvo;
     }
@@ -22,24 +24,24 @@ conversationSchema.statics.initiateConversation = async function(currentUser, ot
     return newConvo;
 };
 
-conversationSchema.statics.findConversation = async function(convoId, userId) {
+conversationSchema.statics.findConversation = async function (convoId, userId) {
     const conversation = await Conversation.findOne({
         _id: convoId,
         users: {
             _id: userId
         }
     });
-    if(!conversation) {
+    if (!conversation) {
         throw new Error('Conversation does not exist');
     }
     return conversation;
 };
 
-conversationSchema.statics.findConversations = async function(user, page, limit) {
+conversationSchema.statics.findConversations = async function (user, page, limit) {
     const populateUser = {
-        path: 'users', 
-        select: 'username avatar',  
-        match: { _id : { $ne : user } }
+        path: 'users',
+        select: 'username avatar',
+        match: { _id: { $ne: user } }
     };
     const populateLastMessage = {
         path: 'lastMessage',
@@ -53,7 +55,7 @@ conversationSchema.statics.findConversations = async function(user, page, limit)
             updatedAt: 'desc'
         },
         lean: true
-    }
+    };
     const result = await Conversation.paginate({ users: user }, options);
     return result;
 };

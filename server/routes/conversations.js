@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const { 
-    startConversation, 
-    getAllConversations, 
-    getConversation, 
-    sendMessage 
+const {
+    startConversation,
+    getAllConversations,
+    getConversation,
+    sendMessage
 } = require('../handlers/conversations');
 const { upload } = require('../middleware/fileUpload');
 

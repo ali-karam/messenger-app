@@ -10,5 +10,4 @@ router.route('/:id')
     .get(getUser)
     .patch(ensureCorrectUser, upload.single('avatar'), updateUser);
 
-
 module.exports = router;

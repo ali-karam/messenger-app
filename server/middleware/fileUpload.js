@@ -5,7 +5,7 @@ exports.upload = multer({
         fileSize: 1000000
     },
     fileFilter(req, file, cb) {
-        if(!file.originalname.match(/\.(jpe?g|png)$/)) {
+        if (!file.originalname.match(/\.(jpe?g|png)$/)) {
             return cb('Please upload a jpg, jpeg, or png image');
         }
         cb(undefined, true);
