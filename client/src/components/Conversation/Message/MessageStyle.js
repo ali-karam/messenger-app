@@ -24,6 +24,11 @@ const messageStyle = makeStyles((theme) => ({
     },
     '& $messageImg': {
       borderRadius: '0 1em 1em'
+    },
+    '& div': {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start'
     }
   },
   messageText: {
