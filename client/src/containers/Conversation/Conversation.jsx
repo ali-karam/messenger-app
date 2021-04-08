@@ -127,11 +127,11 @@ const Conversation = () => {
   }
   return (
     <div className={classes.root}>
-      {otherUser ? <OtherUserBanner username={otherUser.username} isOnline /> : null}
-      {loading ? <CircularProgress size={30} className={classes.loading} /> : null}
+      {otherUser && <OtherUserBanner username={otherUser.username} isOnline />}
+      {loading && <CircularProgress size={30} className={classes.loading} />}
       <div className={classes.messages}>
         {messagesDisplay}
-        {emojiPickerIsShowing ? emojiSelector : null}
+        {emojiPickerIsShowing && emojiSelector}
       </div>
       <MessageBar
         text={text}
