@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { useHistory, Route } from 'react-router-dom';
 import axios from 'axios';
 import { CircularProgress, Grid, Typography } from '@material-ui/core';
 import AuthContext from '../../context/auth-context';
+import SocketContext from '../../context/socket-context';
+import MessageContext from '../../context/message-context';
 import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 import ConversationPreview from '../../components/Sidebar/ConversationPreview/ConversationPreview';
 import UserCard from '../../components/Sidebar/UserCard/UserCard';
@@ -26,6 +28,8 @@ const Sidebar = ({ match }) => {
 
   const history = useHistory();
   const authContext = useContext(AuthContext);
+  const { socket } = useContext(SocketContext);
+  const messageContext = useContext(MessageContext);
   const classes = sidebarStyle();
 
   const observer = useRef();
@@ -38,6 +42,46 @@ const Sidebar = ({ match }) => {
     loading
   );
 
+  const convoUpdateHandler = useCallback(
+    (message) => {
+      const convoId = message.conversation._id;
+      const msg = message.img ? 'Sent a photo' : message.text;
+      const convoIndex = conversations.findIndex((convo) => convo.id === convoId);
+
+      if (convoIndex > -1) {
+        const path = history.location.pathname;
+        const pathId = path.substring(path.lastIndexOf('/') + 1);
+        const isRead = pathId === convoId;
+
+        const newConvos = [...conversations];
+        const selectedConvo = newConvos[convoIndex];
+        newConvos.splice(convoIndex, 1);
+        selectedConvo.lastMessage = {
+          creator: message.creator._id,
+          read: isRead,
+          text: msg,
+          _id: message._id
+        };
+        newConvos.unshift(selectedConvo);
+        setConversations(newConvos);
+      }
+    },
+    [conversations, history.location.pathname]
+  );
+
+  useEffect(() => {
+    socket.on('newMessage', (message) => {
+      convoUpdateHandler(message);
+    });
+  }, [socket, conversations, convoUpdateHandler]);
+
+  useEffect(() => {
+    if (messageContext.message) {
+      convoUpdateHandler(messageContext.message);
+      messageContext.newMsg(null);
+    }
+  }, [messageContext, conversations, convoUpdateHandler]);
+
   useEffect(() => {
     setLoading(true);
     axios
@@ -49,7 +93,7 @@ const Sidebar = ({ match }) => {
       .catch((err) => {
         errorHandler();
       });
-  }, [authContext]);
+  }, [authContext.user.id]);
 
   useEffect(() => {
     setLoading(true);
@@ -106,6 +150,12 @@ const Sidebar = ({ match }) => {
 
   const convoSelectedHandler = (id) => {
     setQuery('');
+    const convoIndex = conversations.findIndex((convo) => convo.id === id);
+    if (convoIndex > -1 && conversations[convoIndex].lastMessage) {
+      const newConvos = [...conversations];
+      newConvos[convoIndex].lastMessage.read = true;
+      setConversations(newConvos);
+    }
     history.push(`/messenger/${id}`);
   };
 
@@ -117,11 +167,10 @@ const Sidebar = ({ match }) => {
           _id: res.data.conversationId,
           users: [res.data.otherUser]
         };
-        if (res.data.lastMesssage) {
-          newConvo.lastMessage = res.data.lastMessage;
-        }
+        const convoIndex = conversations.findIndex((convo) => convo.id === res.data.conversationId);
         setConversations((prevConvos) => {
-          if (prevConvos.some((convo) => convo._id === res.data.conversationId)) {
+          if (convoIndex > -1) {
+            prevConvos[convoIndex].lastMessage.read = true;
             return prevConvos;
           }
           return [newConvo, ...prevConvos];
