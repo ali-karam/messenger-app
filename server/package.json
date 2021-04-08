@@ -19,6 +19,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.0.2",
+    "file-type": "^16.3.0",
     "http-errors": "~1.8.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.19",
@@ -26,6 +27,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "nodemon": "^2.0.6",
+    "socket.io": "^4.0.1",
     "validator": "^13.5.2"
   },
   "devDependencies": {
