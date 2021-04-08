@@ -33,19 +33,22 @@ const Conversation = () => {
 
   useEffect(() => {
     socket.emit('join', { convoId: id });
+    return () => socket.emit('leave', { convoId: id });
+  }, [socket, id]);
+
+  useEffect(() => {
     socket.on('message', (message) => {
       newMsg(message);
       setMessages((prevMessages) => {
-        prevMessages.pop();
+        if (prevMessages.length > 19 && hasMore) {
+          prevMessages.pop();
+        }
         return [message, ...prevMessages];
       });
       socket.emit('read', { convoId: id });
     });
-    return () => {
-      socket.emit('leave', { convoId: id });
-      socket.off('message');
-    };
-  }, [socket, id, newMsg]);
+    return () => socket.off('message');
+  }, [socket, id, newMsg, hasMore]);
 
   useEffect(() => {
     setLoading(true);
