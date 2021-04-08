@@ -42,45 +42,54 @@ const Sidebar = ({ match }) => {
     loading
   );
 
-  const convoUpdateHandler = useCallback(
+  const msgUpdateHandler = useCallback(
     (message) => {
       const convoId = message.conversation._id;
-      const msg = message.img ? 'Sent a photo' : message.text;
-      const convoIndex = conversations.findIndex((convo) => convo.id === convoId);
+      const path = history.location.pathname;
+      const currConvoId = path.substring(path.lastIndexOf('/') + 1);
+      const isRead = currConvoId === convoId;
+      const msgContent = message.img ? 'Sent a photo' : message.text;
+      const lastMessage = {
+        creator: message.creator._id,
+        read: isRead,
+        text: msgContent,
+        _id: message._id
+      };
+      const convoIndex = conversations.findIndex((convo) => convo._id === convoId);
+      const updatedConvos = [...conversations];
+      let newConvo;
 
       if (convoIndex > -1) {
-        const path = history.location.pathname;
-        const pathId = path.substring(path.lastIndexOf('/') + 1);
-        const isRead = pathId === convoId;
-
-        const newConvos = [...conversations];
-        const selectedConvo = newConvos[convoIndex];
-        newConvos.splice(convoIndex, 1);
-        selectedConvo.lastMessage = {
-          creator: message.creator._id,
-          read: isRead,
-          text: msg,
-          _id: message._id
-        };
-        newConvos.unshift(selectedConvo);
-        setConversations(newConvos);
+        newConvo = updatedConvos[convoIndex];
+        newConvo.lastMessage = lastMessage;
+        let numUnread;
+        if (!isRead) {
+          numUnread = newConvo.numUnread ? ++newConvo.numUnread : 1;
+        }
+        newConvo.numUnread = numUnread;
+        updatedConvos.splice(convoIndex, 1);
+      } else {
+        newConvo = createNewConvo(message, lastMessage);
       }
+      updatedConvos.unshift(newConvo);
+      setConversations(updatedConvos);
     },
     [conversations, history.location.pathname]
   );
 
   useEffect(() => {
     socket.on('newMessage', (message) => {
-      convoUpdateHandler(message);
+      msgUpdateHandler(message);
     });
-  }, [socket, conversations, convoUpdateHandler]);
+    return () => socket.off('newMessage');
+  }, [socket, msgUpdateHandler]);
 
   useEffect(() => {
     if (messageContext.message) {
-      convoUpdateHandler(messageContext.message);
+      msgUpdateHandler(messageContext.message);
       messageContext.newMsg(null);
     }
-  }, [messageContext, conversations, convoUpdateHandler]);
+  }, [messageContext, conversations, msgUpdateHandler]);
 
   useEffect(() => {
     setLoading(true);
@@ -138,6 +147,23 @@ const Sidebar = ({ match }) => {
     setUsers([]);
   }, [query]);
 
+  const createNewConvo = (message, lastMessage) => {
+    return {
+      _id: message.conversation._id,
+      createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
+      lastMessage: lastMessage,
+      users: [
+        {
+          username: message.creator.username,
+          _id: message.creator._id,
+          avatar: message.creator.avatar
+        }
+      ],
+      numUnread: 1
+    };
+  };
+
   const errorHandler = () => {
     setErrorMsg('Oops! Something went wrong');
     setLoading(false);
@@ -150,10 +176,11 @@ const Sidebar = ({ match }) => {
 
   const convoSelectedHandler = (id) => {
     setQuery('');
-    const convoIndex = conversations.findIndex((convo) => convo.id === id);
+    const convoIndex = conversations.findIndex((convo) => convo._id === id);
     if (convoIndex > -1 && conversations[convoIndex].lastMessage) {
       const newConvos = [...conversations];
       newConvos[convoIndex].lastMessage.read = true;
+      newConvos[convoIndex].numUnread = null;
       setConversations(newConvos);
     }
     history.push(`/messenger/${id}`);
@@ -167,10 +194,13 @@ const Sidebar = ({ match }) => {
           _id: res.data.conversationId,
           users: [res.data.otherUser]
         };
-        const convoIndex = conversations.findIndex((convo) => convo.id === res.data.conversationId);
+        const convoIndex = conversations.findIndex(
+          (convo) => convo._id === res.data.conversationId
+        );
         setConversations((prevConvos) => {
           if (convoIndex > -1) {
             prevConvos[convoIndex].lastMessage.read = true;
+            prevConvos[convoIndex].numUnread = null;
             return prevConvos;
           }
           return [newConvo, ...prevConvos];
