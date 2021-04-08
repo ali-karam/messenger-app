@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { CircularProgress, ClickAwayListener, Modal } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import Picker from 'emoji-picker-react';
+import SocketContext from '../../context/socket-context';
+import MessageContext from '../../context/message-context';
 import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 import Message from '../../components/Conversation/Message/Message';
 import MessageBar from '../../components/Conversation/MessageBar/MessageBar';
@@ -26,6 +28,24 @@ const Conversation = () => {
   const { id } = useParams();
   const observer = useRef();
   const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
+  const { socket } = useContext(SocketContext);
+  const { newMsg } = useContext(MessageContext);
+
+  useEffect(() => {
+    socket.emit('join', { convoId: id });
+    socket.on('message', (message) => {
+      newMsg(message);
+      setMessages((prevMessages) => {
+        prevMessages.pop();
+        return [message, ...prevMessages];
+      });
+      socket.emit('read', { convoId: id });
+    });
+    return () => {
+      socket.emit('leave', { convoId: id });
+      socket.off('message');
+    };
+  }, [socket, id, newMsg]);
 
   useEffect(() => {
     setLoading(true);
@@ -48,17 +68,11 @@ const Conversation = () => {
   }, [id]);
 
   const sendMsgToServer = (data) => {
-    axios
-      .post(`/conversations/${id}`, data)
-      .then((res) => {
-        setMessages((prevMessages) => {
-          prevMessages.pop();
-          return [res.data, ...prevMessages];
-        });
-      })
-      .catch((err) => {
-        setErrorMsg('Oops! Something went wrong');
-      });
+    try {
+      socket.emit('sendMessage', { message: data.message, otherUserId: otherUser.id, convoId: id });
+    } catch (err) {
+      setErrorMsg('Oops! Something went wrong');
+    }
   };
 
   const enterHandler = (event) => {
@@ -80,9 +94,7 @@ const Conversation = () => {
       setErrorMsg('Image must be either a png, jpg, or jpeg');
     } else {
       setErrorMsg('');
-      const formData = new FormData();
-      formData.append('message', file);
-      sendMsgToServer(formData);
+      sendMsgToServer({ message: file });
     }
   };
 
