@@ -45,7 +45,7 @@ const Conversation = () => {
         }
         return [message, ...prevMessages];
       });
-      socket.emit('read', { convoId: id });
+      socket.emit('read', { messageId: message._id });
     });
     return () => socket.off('message');
   }, [socket, id, newMsg, hasMore]);

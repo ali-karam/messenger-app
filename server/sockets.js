@@ -27,8 +27,8 @@ sockets.init = function (server) {
             }
         });
 
-        socket.on('read', async ({ convoId }) => {
-            await db.Message.markMessagesRead(convoId, userId);
+        socket.on('read', async ({ messageId }) => {
+            await db.Message.updateOne({ _id: messageId }, { read: true });
         });
 
         socket.on('leave', ({ convoId }) => {
