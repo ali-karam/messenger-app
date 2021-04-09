@@ -14,6 +14,13 @@ sockets.init = function (server) {
         };
         users.push(user);
 
+        socket.emit(
+            'onlineUserList',
+            users.map((user) => user.userId)
+        );
+
+        socket.broadcast.emit('newUser', userId);
+
         socket.on('join', ({ convoId }) => {
             socket.join(convoId);
         });
@@ -37,6 +44,7 @@ sockets.init = function (server) {
         });
 
         socket.on('disconnect', () => {
+            socket.broadcast.emit('userLeft', userId);
             users = users.filter((user) => user.clientId !== socket.id);
         });
     });

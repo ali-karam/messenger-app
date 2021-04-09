@@ -77,6 +77,18 @@ const Sidebar = ({ match }) => {
     [conversations, history.location.pathname]
   );
 
+  const updateConvoOnlineStatus = useCallback(
+    (data, value) => {
+      const newConvos = [...conversations];
+      const convoIndex = newConvos.findIndex((convo) => convo.users[0]._id === data);
+      if (convoIndex > -1) {
+        newConvos[convoIndex].isOnline = value;
+      }
+      setConversations(newConvos);
+    },
+    [conversations]
+  );
+
   useEffect(() => {
     socket.on('newMessage', (message) => {
       msgUpdateHandler(message);
@@ -105,18 +117,38 @@ const Sidebar = ({ match }) => {
   }, [authContext.user.id]);
 
   useEffect(() => {
+    socket.on('newUser', (data) => {
+      updateConvoOnlineStatus(data, true);
+    });
+    socket.on('userLeft', (data) => {
+      updateConvoOnlineStatus(data, false);
+    });
+    return () => {
+      socket.off('newUser');
+      socket.off('userLeft');
+    };
+  }, [socket, conversations, updateConvoOnlineStatus]);
+
+  useEffect(() => {
     setLoading(true);
+    let onlineUsers = [];
+    socket.on('onlineUserList', (data) => {
+      onlineUsers = data;
+    });
     axios
       .get(`/conversations?page=${convoPageNum}`)
       .then((res) => {
-        setConversations((prevConvos) => [...prevConvos, ...res.data.conversations]);
+        let convos = res.data.conversations;
+        convos = mapOnlineUsersToConvos(onlineUsers, convos);
+        setConversations((prevConvos) => [...prevConvos, ...convos]);
         setHasMoreConvos(res.data.hasNext);
         setLoading(false);
       })
       .catch((err) => {
         errorHandler();
       });
-  }, [convoPageNum]);
+    return () => socket.off('onlineUserList');
+  }, [convoPageNum, socket]);
 
   useEffect(() => {
     if (query.trim() === '') {
@@ -162,6 +194,17 @@ const Sidebar = ({ match }) => {
       ],
       numUnread: 1
     };
+  };
+
+  const mapOnlineUsersToConvos = (onlineUsers, convos) => {
+    if (onlineUsers.length <= 1) return convos;
+
+    return convos.map((convo) => {
+      if (onlineUsers.includes(convo.users[0]._id)) {
+        convo.isOnline = true;
+      }
+      return convo;
+    });
   };
 
   const errorHandler = () => {
@@ -246,7 +289,7 @@ const Sidebar = ({ match }) => {
             lastRef={lastConvoRef}
             key={convo._id}
             convo={convo}
-            isOnline={false}
+            isOnline={Boolean(convo.isOnline)}
             click={() => convoSelectedHandler(convo._id)}
           />
         );
@@ -255,7 +298,7 @@ const Sidebar = ({ match }) => {
         <ConversationPreview
           key={convo._id}
           convo={convo}
-          isOnline={false}
+          isOnline={Boolean(convo.isOnline)}
           click={() => convoSelectedHandler(convo._id)}
         />
       );
