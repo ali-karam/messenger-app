@@ -19,7 +19,8 @@ exports.startConversation = async function (req, res, next) {
             conversationId: conversation._id,
             otherUser: {
                 username: otherUser.username,
-                avatar: otherUser.avatar
+                avatar: otherUser.avatar,
+                _id: otherUser._id
             }
         };
         if (conversation.lastMessage) {
@@ -102,7 +103,7 @@ exports.sendMessage = async function (convoId, currentUser, sentMessage) {
         }
         newMessage = await db.Message.populate(newMessage, {
             path: 'creator conversation',
-            select: 'username'
+            select: 'username avatar'
         });
         await db.Conversation.updateOne(conversation, { lastMessage: newMessage });
         return newMessage;
