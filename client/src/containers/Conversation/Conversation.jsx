@@ -5,12 +5,14 @@ import { useParams } from 'react-router-dom';
 import Picker from 'emoji-picker-react';
 import SocketContext from '../../context/socket-context';
 import MessageContext from '../../context/message-context';
+import AuthContext from '../../context/auth-context';
 import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 import Message from '../../components/Conversation/Message/Message';
 import MessageBar from '../../components/Conversation/MessageBar/MessageBar';
 import PopupMessage from '../../components/UI/PopupMessage/PopupMessage';
 import OtherUserBanner from '../../components/Conversation/OtherUserBanner/OtherUserBanner';
 import ImagePreview from '../../components/Conversation/ImagePreview/ImagePreview';
+import UserAvatar from '../../components/UI/UserAvatar/UserAvatar';
 import conversationStyle from './ConversationStyle';
 
 const Conversation = () => {
@@ -24,20 +26,31 @@ const Conversation = () => {
   const [emojiPickerIsShowing, setEmojiPickerIsShowing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [imgPreviewSrc, setImgPreviewSrc] = useState(null);
+  const [msgIsRead, setMsgIsRead] = useState(false);
 
   const { id } = useParams();
   const observer = useRef();
   const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
   const { socket } = useContext(SocketContext);
   const { newMsg } = useContext(MessageContext);
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     socket.emit('join', { convoId: id });
+    socket.emit('read', { convoId: id });
     return () => socket.emit('leave', { convoId: id });
   }, [socket, id]);
 
   useEffect(() => {
+    socket.on('userReadMsg', () => {
+      setMsgIsRead(true);
+    });
+    return () => socket.off('userReadMsg');
+  }, [socket]);
+
+  useEffect(() => {
     socket.on('message', (message) => {
+      setMsgIsRead(false);
       newMsg(message);
       setMessages((prevMessages) => {
         if (prevMessages.length > 19 && hasMore) {
@@ -45,10 +58,12 @@ const Conversation = () => {
         }
         return [message, ...prevMessages];
       });
-      socket.emit('read', { messageId: message._id });
+      if (message.creator._id !== authContext.user.id) {
+        socket.emit('read', { messageId: message._id, convoId: id });
+      }
     });
     return () => socket.off('message');
-  }, [socket, id, newMsg, hasMore]);
+  }, [socket, id, newMsg, hasMore, authContext.user.id]);
 
   useEffect(() => {
     setLoading(true);
@@ -140,11 +155,16 @@ const Conversation = () => {
       );
     });
   }
+  let readAvatar;
+  if (msgIsRead && otherUser && messages[0] && messages[0].creator._id === authContext.user.id) {
+    readAvatar = <UserAvatar user={otherUser} className={classes.readAvatar} />;
+  }
   return (
     <div className={classes.root}>
       {otherUser ? <OtherUserBanner username={otherUser.username} isOnline /> : null}
       {loading ? <CircularProgress size={30} className={classes.loading} /> : null}
       <div className={classes.messages}>
+        {readAvatar}
         {messagesDisplay}
         {emojiPickerIsShowing ? emojiSelector : null}
       </div>
