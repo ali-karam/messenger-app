@@ -48,8 +48,8 @@ function App() {
   let routes = (
     <Switch>
       <Route path="/auth" component={Auth} />
-      <ProtectedRoute path="/dashboard" component={Dashboard} />
       <SocketContext.Provider value={{ socket: socket }}>
+        <ProtectedRoute path="/dashboard" component={Dashboard} />
         <MessageContext.Provider value={{ message: message, newMsg: setMessage }}>
           <ProtectedRoute path="/messenger" component={Sidebar} />
         </MessageContext.Provider>
