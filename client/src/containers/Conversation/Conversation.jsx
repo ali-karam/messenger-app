@@ -15,7 +15,7 @@ import ImagePreview from '../../components/Conversation/ImagePreview/ImagePrevie
 import UserAvatar from '../../components/UI/UserAvatar/UserAvatar';
 import conversationStyle from './ConversationStyle';
 
-const Conversation = () => {
+const Conversation = ({ onlineUsers }) => {
   const classes = conversationStyle();
   const [messages, setMessages] = useState([]);
   const [otherUser, setOtherUser] = useState(null);
@@ -161,7 +161,12 @@ const Conversation = () => {
   }
   return (
     <div className={classes.root}>
-      {otherUser ? <OtherUserBanner username={otherUser.username} isOnline /> : null}
+      {otherUser && (
+        <OtherUserBanner
+          username={otherUser.username}
+          isOnline={onlineUsers.includes(otherUser.id)}
+        />
+      )}
       {loading ? <CircularProgress size={30} className={classes.loading} /> : null}
       <div className={classes.messages}>
         {readAvatar}

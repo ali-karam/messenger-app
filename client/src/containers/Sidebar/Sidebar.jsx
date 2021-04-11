@@ -24,6 +24,7 @@ const Sidebar = ({ match }) => {
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
 
   const history = useHistory();
@@ -119,9 +120,11 @@ const Sidebar = ({ match }) => {
   useEffect(() => {
     socket.on('newUser', (data) => {
       updateConvoOnlineStatus(data, true);
+      setOnlineUsers((prevUsers) => [...prevUsers, data]);
     });
     socket.on('userLeft', (data) => {
       updateConvoOnlineStatus(data, false);
+      setOnlineUsers((prevUsers) => prevUsers.filter((user) => user !== data));
     });
     return () => {
       socket.off('newUser');
@@ -134,6 +137,7 @@ const Sidebar = ({ match }) => {
     let onlineUsers = [];
     socket.on('onlineUserList', (data) => {
       onlineUsers = data;
+      setOnlineUsers(data);
     });
     axios
       .get(`/conversations?page=${convoPageNum}`)
@@ -330,7 +334,9 @@ const Sidebar = ({ match }) => {
         />
       </Grid>
       <Grid item xs={isSearching ? 3 : 9} sm={9}>
-        <Route path={match.url + '/:id'} exact component={Conversation} />
+        <Route path={match.url + '/:id'} exact>
+          <Conversation onlineUsers={onlineUsers} />
+        </Route>
       </Grid>
     </Grid>
   );
