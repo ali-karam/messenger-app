@@ -134,16 +134,16 @@ const Sidebar = ({ match }) => {
 
   useEffect(() => {
     setLoading(true);
-    let onlineUsers = [];
+    let onlineUsersList = [];
     socket.on('onlineUserList', (data) => {
-      onlineUsers = data;
+      onlineUsersList = data;
       setOnlineUsers(data);
     });
     axios
       .get(`/conversations?page=${convoPageNum}`)
       .then((res) => {
         let convos = res.data.conversations;
-        convos = mapOnlineUsersToConvos(onlineUsers, convos);
+        convos = mapOnlineUsersToConvos(onlineUsersList, convos);
         setConversations((prevConvos) => [...prevConvos, ...convos]);
         setHasMoreConvos(res.data.hasNext);
         setLoading(false);
@@ -196,15 +196,15 @@ const Sidebar = ({ match }) => {
           avatar: message.creator.avatar
         }
       ],
-      numUnread: 1
+      numUnread: 1,
+      isOnline: true
     };
   };
 
-  const mapOnlineUsersToConvos = (onlineUsers, convos) => {
-    if (onlineUsers.length <= 1) return convos;
-
+  const mapOnlineUsersToConvos = (onlineUsersList, convos) => {
+    if (onlineUsersList.length <= 1) return convos;
     return convos.map((convo) => {
-      if (onlineUsers.includes(convo.users[0]._id)) {
+      if (onlineUsersList.includes(convo.users[0]._id)) {
         convo.isOnline = true;
       }
       return convo;
@@ -249,6 +249,9 @@ const Sidebar = ({ match }) => {
             prevConvos[convoIndex].lastMessage.read = true;
             prevConvos[convoIndex].numUnread = null;
             return prevConvos;
+          }
+          if (onlineUsers.includes(res.data.otherUser._id)) {
+            newConvo.isOnline = true;
           }
           return [newConvo, ...prevConvos];
         });
