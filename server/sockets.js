@@ -25,18 +25,26 @@ sockets.init = function (server) {
             socket.join(convoId);
         });
 
-        socket.on('sendMessage', async ({ message, otherUserId, convoId }) => {
-            const newMsg = await sendMessage(convoId, userId, message);
-            io.to(convoId).emit('message', newMsg);
-            const recepient = users.find((user) => user.userId === otherUserId);
-            if (recepient) {
-                socket.broadcast.to(recepient.clientId).emit('newMessage', newMsg);
+        socket.on('sendMessage', async ({ message, otherUserId, convoId }, callback) => {
+            try {
+                const newMsg = await sendMessage(convoId, userId, message);
+                io.to(convoId).emit('message', newMsg);
+                const recepient = users.find((user) => user.userId === otherUserId);
+                if (recepient) {
+                    socket.broadcast.to(recepient.clientId).emit('newMessage', newMsg);
+                }
+            } catch (err) {
+                callback(err.message);
             }
         });
 
-        socket.on('read', async ({ messageId, convoId }) => {
+        socket.on('read', async ({ messageId, convoId }, callback) => {
             if (messageId) {
-                await db.Message.updateOne({ _id: messageId }, { read: true });
+                try {
+                    await db.Message.updateOne({ _id: messageId }, { read: true });
+                } catch (err) {
+                    callback(err.message);
+                }
             }
             socket.broadcast.to(convoId).emit('userReadMsg');
         });

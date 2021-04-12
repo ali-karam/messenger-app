@@ -59,7 +59,9 @@ const Conversation = ({ onlineUsers }) => {
         return [message, ...prevMessages];
       });
       if (message.creator._id !== authContext.user.id) {
-        socket.emit('read', { messageId: message._id, convoId: id });
+        socket.emit('read', { messageId: message._id, convoId: id }, (err) => {
+          setErrorMsg('Oops! Something went wrong');
+        });
       }
     });
     return () => socket.off('message');
@@ -86,11 +88,13 @@ const Conversation = ({ onlineUsers }) => {
   }, [id]);
 
   const sendMsgToServer = (data) => {
-    try {
-      socket.emit('sendMessage', { message: data.message, otherUserId: otherUser.id, convoId: id });
-    } catch (err) {
-      setErrorMsg('Oops! Something went wrong');
-    }
+    socket.emit(
+      'sendMessage',
+      { message: data.message, otherUserId: otherUser.id, convoId: id },
+      (err) => {
+        setErrorMsg('Oops! Something went wrong');
+      }
+    );
   };
 
   const enterHandler = (event) => {

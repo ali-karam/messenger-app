@@ -80,34 +80,31 @@ exports.getConversation = async function (req, res, next) {
 };
 
 exports.sendMessage = async function (convoId, currentUser, sentMessage) {
-    try {
-        const conversation = await db.Conversation.findConversation(convoId, currentUser);
-        const creator = currentUser;
-        let message = sentMessage;
-        let newMessage;
-        if (typeof message === 'object') {
-            const fileType = await FileType.fromBuffer(message);
-            if (!fileType.mime.match(/^image\/(jpe?g|png)$/)) {
-                throw new Error('Image must be either a png, jpg, or jpeg');
-            }
-            if (Buffer.from(message).byteLength > 1000000) {
-                throw new Error('Image too large. Max size is 1MB');
-            }
-            const img = message;
-            newMessage = await db.Message.create({ conversation, creator, img });
-        } else {
-            if (!message || !message.trim()) {
-                throw new Error('Message cannot be empty');
-            }
-            newMessage = await db.Message.create({ conversation, creator, text: message });
+    const conversation = await db.Conversation.findConversation(convoId, currentUser);
+    const creator = currentUser;
+    let message = sentMessage;
+    let newMessage;
+
+    if (typeof message === 'object') {
+        const fileType = await FileType.fromBuffer(message);
+        if (!fileType.mime.match(/^image\/(jpe?g|png)$/)) {
+            throw new Error('Image must be either a png, jpg, or jpeg');
         }
-        newMessage = await db.Message.populate(newMessage, {
-            path: 'creator conversation',
-            select: 'username avatar'
-        });
-        await db.Conversation.updateOne(conversation, { lastMessage: newMessage });
-        return newMessage;
-    } catch (err) {
-        console.log(err);
+        if (Buffer.from(message).byteLength > 1000000) {
+            throw new Error('Image too large. Max size is 1MB');
+        }
+        const img = message;
+        newMessage = await db.Message.create({ conversation, creator, img });
+    } else {
+        if (!message || !message.trim()) {
+            throw new Error('Message cannot be empty');
+        }
+        newMessage = await db.Message.create({ conversation, creator, text: message });
     }
+    newMessage = await db.Message.populate(newMessage, {
+        path: 'creator conversation',
+        select: 'username avatar'
+    });
+    await db.Conversation.updateOne(conversation, { lastMessage: newMessage });
+    return newMessage;
 };
