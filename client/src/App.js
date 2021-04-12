@@ -18,7 +18,7 @@ function App() {
   const history = useHistory();
   const [user, setUser] = useState(null);
   const [socket, setSocket] = useState(null);
-  const [message, setMessage] = useState(null);
+  const [latestMsg, setLatestMsg] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ function App() {
       <Route path="/auth" component={Auth} />
       <SocketContext.Provider value={{ socket: socket }}>
         <ProtectedRoute path="/dashboard" component={Dashboard} />
-        <MessageContext.Provider value={{ message: message, newMsg: setMessage }}>
+        <MessageContext.Provider value={{ latestMsg: latestMsg, newLatestMsg: setLatestMsg }}>
           <ProtectedRoute path="/messenger" component={Sidebar} />
         </MessageContext.Provider>
       </SocketContext.Provider>

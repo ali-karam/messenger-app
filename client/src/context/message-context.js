@@ -1,8 +1,8 @@
 import React from 'react';
 
 const messageContext = React.createContext({
-  message: null,
-  newMsg: () => {}
+  latestMsg: null,
+  newLatestMsg: () => {}
 });
 
 export default messageContext;

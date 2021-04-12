@@ -32,7 +32,7 @@ const Conversation = ({ onlineUsers }) => {
   const observer = useRef();
   const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
   const { socket } = useContext(SocketContext);
-  const { newMsg } = useContext(MessageContext);
+  const { newLatestMsg } = useContext(MessageContext);
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const Conversation = ({ onlineUsers }) => {
   useEffect(() => {
     socket.on('message', (message) => {
       setMsgIsRead(false);
-      newMsg(message);
+      newLatestMsg(message);
       setMessages((prevMessages) => {
         if (prevMessages.length > 19 && hasMore) {
           prevMessages.pop();
@@ -65,7 +65,7 @@ const Conversation = ({ onlineUsers }) => {
       }
     });
     return () => socket.off('message');
-  }, [socket, id, newMsg, hasMore, authContext.user.id]);
+  }, [socket, id, newLatestMsg, hasMore, authContext.user.id]);
 
   useEffect(() => {
     setLoading(true);

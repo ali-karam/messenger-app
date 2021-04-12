@@ -98,9 +98,9 @@ const Sidebar = ({ match }) => {
   }, [socket, msgUpdateHandler]);
 
   useEffect(() => {
-    if (messageContext.message) {
-      msgUpdateHandler(messageContext.message);
-      messageContext.newMsg(null);
+    if (messageContext.latestMsg) {
+      msgUpdateHandler(messageContext.latestMsg);
+      messageContext.newLatestMsg(null);
     }
   }, [messageContext, conversations, msgUpdateHandler]);
 
