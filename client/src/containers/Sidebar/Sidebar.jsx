@@ -271,19 +271,11 @@ const Sidebar = ({ match }) => {
             lastRef={lastUserRef}
             key={user._id}
             user={user}
-            isOnline={true}
             click={() => personSelectedHandler(user)}
           />
         );
       }
-      return (
-        <UserCard
-          key={user._id}
-          user={user}
-          isOnline={true}
-          click={() => personSelectedHandler(user)}
-        />
-      );
+      return <UserCard key={user._id} user={user} click={() => personSelectedHandler(user)} />;
     });
   };
 
