@@ -5,13 +5,7 @@ const messageStyle = makeStyles((theme) => ({
     marginBottom: 12,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end',
-    '& $avatar': {
-      height: 22,
-      width: 22,
-      marginRight: 2,
-      top: 8
-    }
+    alignItems: 'flex-end'
   },
   otherUserContent: {
     marginBottom: 12,

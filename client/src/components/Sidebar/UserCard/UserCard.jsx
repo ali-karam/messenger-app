@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Card, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../../../context/auth-context';
+import SocketContext from '../../../context/socket-context';
 import { logout } from '../../../utils/AuthUtils';
 import UserAvatar from '../../UI/UserAvatar/UserAvatar';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
@@ -11,6 +12,7 @@ const UserCard = ({ user, click, lastRef, currentUser, isOnline }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const authContext = useContext(AuthContext);
+  const { socket } = useContext(SocketContext);
   const classes = userCardStyle();
 
   const optionBtn = (
@@ -23,7 +25,7 @@ const UserCard = ({ user, click, lastRef, currentUser, isOnline }) => {
       </IconButton>
       <Menu open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)} anchorEl={anchorEl}>
         <MenuItem onClick={() => history.push('/dashboard')}>Dashboard</MenuItem>
-        <MenuItem onClick={() => logout(authContext, history)}>Logout</MenuItem>
+        <MenuItem onClick={() => logout(authContext, history, socket)}>Logout</MenuItem>
       </Menu>
     </>
   );

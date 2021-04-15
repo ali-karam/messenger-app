@@ -1,4 +1,5 @@
 const db = require('../models');
+const FileType = require('file-type');
 
 exports.startConversation = async function (req, res, next) {
     try {
@@ -8,7 +9,7 @@ exports.startConversation = async function (req, res, next) {
         if (!otherUser) {
             throw new Error('That user does not exist');
         }
-        if(currentUser._id == otherUser._id) {
+        if (currentUser._id == otherUser._id) {
             throw new Error('You cannot start a conversation with yourself');
         }
         const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
@@ -18,7 +19,8 @@ exports.startConversation = async function (req, res, next) {
             conversationId: conversation._id,
             otherUser: {
                 username: otherUser.username,
-                avatar: otherUser.avatar
+                avatar: otherUser.avatar,
+                _id: otherUser._id
             }
         };
         if (conversation.lastMessage) {
@@ -70,37 +72,39 @@ exports.getConversation = async function (req, res, next) {
         res.status(200).json({
             messages: result.docs,
             hasNext: result.hasNextPage,
-            otherUser: { username, avatar }
+            otherUser: { username, avatar, id: otherUser }
         });
     } catch (err) {
         return next({ status: 400, message: err.message });
     }
 };
 
-exports.sendMessage = async function (req, res, next) {
-    try {
-        const conversation = await db.Conversation.findConversation(req.params.id, req.user);
-        const creator = req.user;
-        let message = req.body.message;
-        let newMessage;
+exports.sendMessage = async function (convoId, currentUser, sentMessage) {
+    const conversation = await db.Conversation.findConversation(convoId, currentUser);
+    const creator = currentUser;
+    let message = sentMessage;
+    let newMessage;
 
-        if (req.file) {
-            const img = req.file.buffer;
-            const text = message;
-            newMessage = await db.Message.create({ conversation, creator, img, text });
-        } else {
-            if (!message || !message.trim()) {
-                throw new Error('Message cannot be empty');
-            }
-            newMessage = await db.Message.create({ conversation, creator, text: message });
+    if (typeof message === 'object') {
+        const fileType = await FileType.fromBuffer(message);
+        if (!fileType.mime.match(/^image\/(jpe?g|png)$/)) {
+            throw new Error('Image must be either a png, jpg, or jpeg');
         }
-        newMessage = await db.Message.populate(newMessage, {
-            path: 'creator conversation',
-            select: 'username'
-        });
-        await db.Conversation.updateOne(conversation, { lastMessage: newMessage });
-        res.status(201).json(newMessage);
-    } catch (err) {
-        return next({ status: 400, message: err.message });
+        if (Buffer.from(message).byteLength > 1000000) {
+            throw new Error('Image too large. Max size is 1MB');
+        }
+        const img = message;
+        newMessage = await db.Message.create({ conversation, creator, img });
+    } else {
+        if (!message || !message.trim()) {
+            throw new Error('Message cannot be empty');
+        }
+        newMessage = await db.Message.create({ conversation, creator, text: message });
     }
+    newMessage = await db.Message.populate(newMessage, {
+        path: 'creator conversation',
+        select: 'username avatar'
+    });
+    await db.Conversation.updateOne(conversation, { lastMessage: newMessage });
+    return newMessage;
 };

@@ -30,6 +30,13 @@ const conversationStyle = makeStyles((theme) => ({
   loading: {
     position: 'absolute',
     top: 100
+  },
+  readAvatar: {
+    height: 22,
+    width: 22,
+    marginRight: 4,
+    position: 'relative',
+    bottom: 3
   }
 }));
 

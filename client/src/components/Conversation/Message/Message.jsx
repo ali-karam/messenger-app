@@ -41,19 +41,17 @@ const Message = ({ message, lastRef, otherUser, latestMsg, imgClicked }) => {
     );
   };
 
-  const otherUserAvatar = <UserAvatar user={otherUser} className={classes.avatar} />;
   let messageDisplay = (
     <div className={classes.userContent}>
       <Typography className={classes.messageInfo}>{displayTimestamp(message.createdAt)}</Typography>
       {displayMessage(message)}
-      {latestMsg && isLoggedInUser && message.read ? otherUserAvatar : null}
     </div>
   );
 
   if (!isLoggedInUser) {
     messageDisplay = (
       <div className={classes.otherUserContent}>
-        {otherUserAvatar}
+        <UserAvatar user={otherUser} className={classes.avatar} />
         <div>
           <Typography className={classes.messageInfo}>
             <span style={{ textTransform: 'capitalize' }}>{otherUser.username} </span>

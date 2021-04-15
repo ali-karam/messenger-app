@@ -1,17 +1,21 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { CircularProgress, ClickAwayListener, Modal } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import Picker from 'emoji-picker-react';
+import SocketContext from '../../context/socket-context';
+import MessageContext from '../../context/message-context';
+import AuthContext from '../../context/auth-context';
 import useIntersectionObserver from '../../customHooks/useIntersectionObserver';
 import Message from '../../components/Conversation/Message/Message';
 import MessageBar from '../../components/Conversation/MessageBar/MessageBar';
 import PopupMessage from '../../components/UI/PopupMessage/PopupMessage';
 import OtherUserBanner from '../../components/Conversation/OtherUserBanner/OtherUserBanner';
 import ImagePreview from '../../components/Conversation/ImagePreview/ImagePreview';
+import UserAvatar from '../../components/UI/UserAvatar/UserAvatar';
 import conversationStyle from './ConversationStyle';
 
-const Conversation = () => {
+const Conversation = ({ onlineUsers }) => {
   const classes = conversationStyle();
   const [messages, setMessages] = useState([]);
   const [otherUser, setOtherUser] = useState(null);
@@ -22,10 +26,46 @@ const Conversation = () => {
   const [emojiPickerIsShowing, setEmojiPickerIsShowing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [imgPreviewSrc, setImgPreviewSrc] = useState(null);
+  const [msgIsRead, setMsgIsRead] = useState(false);
 
   const { id } = useParams();
   const observer = useRef();
   const lastMsgRef = useIntersectionObserver(observer, setPageNum, hasMore, loading);
+  const { socket } = useContext(SocketContext);
+  const { newLatestMsg } = useContext(MessageContext);
+  const authContext = useContext(AuthContext);
+
+  useEffect(() => {
+    socket.emit('join', { convoId: id });
+    socket.emit('read', { convoId: id });
+    return () => socket.emit('leave', { convoId: id });
+  }, [socket, id]);
+
+  useEffect(() => {
+    socket.on('userReadMsg', () => {
+      setMsgIsRead(true);
+    });
+    return () => socket.off('userReadMsg');
+  }, [socket]);
+
+  useEffect(() => {
+    socket.on('message', (message) => {
+      setMsgIsRead(false);
+      newLatestMsg(message);
+      setMessages((prevMessages) => {
+        if (prevMessages.length > 19 && hasMore) {
+          prevMessages.pop();
+        }
+        return [message, ...prevMessages];
+      });
+      if (message.creator._id !== authContext.user.id) {
+        socket.emit('read', { messageId: message._id, convoId: id }, (err) => {
+          setErrorMsg('Oops! Something went wrong');
+        });
+      }
+    });
+    return () => socket.off('message');
+  }, [socket, id, newLatestMsg, hasMore, authContext.user.id]);
 
   useEffect(() => {
     setLoading(true);
@@ -48,17 +88,13 @@ const Conversation = () => {
   }, [id]);
 
   const sendMsgToServer = (data) => {
-    axios
-      .post(`/conversations/${id}`, data)
-      .then((res) => {
-        setMessages((prevMessages) => {
-          prevMessages.pop();
-          return [res.data, ...prevMessages];
-        });
-      })
-      .catch((err) => {
+    socket.emit(
+      'sendMessage',
+      { message: data.message, otherUserId: otherUser.id, convoId: id },
+      (err) => {
         setErrorMsg('Oops! Something went wrong');
-      });
+      }
+    );
   };
 
   const enterHandler = (event) => {
@@ -80,9 +116,7 @@ const Conversation = () => {
       setErrorMsg('Image must be either a png, jpg, or jpeg');
     } else {
       setErrorMsg('');
-      const formData = new FormData();
-      formData.append('message', file);
-      sendMsgToServer(formData);
+      sendMsgToServer({ message: file });
     }
   };
 
@@ -125,11 +159,21 @@ const Conversation = () => {
       );
     });
   }
+  let readAvatar;
+  if (msgIsRead && otherUser && messages[0] && messages[0].creator._id === authContext.user.id) {
+    readAvatar = <UserAvatar user={otherUser} className={classes.readAvatar} />;
+  }
   return (
     <div className={classes.root}>
-      {otherUser && <OtherUserBanner username={otherUser.username} isOnline />}
-      {loading && <CircularProgress size={30} className={classes.loading} />}
+      {otherUser && (
+        <OtherUserBanner
+          username={otherUser.username}
+          isOnline={onlineUsers.includes(otherUser.id)}
+        />
+      )}
+      {loading ? <CircularProgress size={30} className={classes.loading} /> : null}
       <div className={classes.messages}>
+        {readAvatar}
         {messagesDisplay}
         {emojiPickerIsShowing && emojiSelector}
       </div>

@@ -11,7 +11,7 @@ const userCardStyle = makeStyles((theme) => ({
     alignItems: 'center'
   },
   avatar: {
-    marginRight: 2
+    marginRight: 10
   },
   username: {
     textTransform: 'Capitalize',
@@ -21,6 +21,9 @@ const userCardStyle = makeStyles((theme) => ({
     boxShadow: 'none',
     width: '90%',
     padding: 0,
+    '& $avatar': {
+      marginRight: 2
+    },
     '@media (max-width:600px)': {
       '& $username': {
         display: 'none'
