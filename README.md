@@ -1,6 +1,6 @@
 # Messenger App
 
-A 1:1 real-time web-based messenger using React, Node, Express.js, and Socket.io.
+A 1:1 real-time web-based messenger using React, Node, Express.js, MongoDB, and Socket.io. 
 
 ## Getting started
 
