@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Box, Button, CssBaseline, Paper, Grid, Typography } from '@material-ui/core';
 import { Formik, Form } from "formik";
@@ -7,7 +7,7 @@ import axios from 'axios';
 import AuthContext from '../../context/auth-context';
 import authStyle from './AuthStyle';
 import ValidatedTextField from '../../components/Form/ValidatedTextField/ValidatedTextField';
-import PopupMessage from '../../components/Form/PopupMessage/PopupMessage';
+import PopupMessage from '../../components/UI/PopupMessage/PopupMessage';
 import ImageOverlay from '../../components/Form/ImageOverlay/ImageOverlay';
 
 const Auth = () => {
@@ -16,9 +16,15 @@ const Auth = () => {
   const [isLoginPage, setIsLoginPage] = React.useState(true);
   const [errorMsg, setErrorMsg] = React.useState("Something went wrong");
 
-  const history = useHistory();
+  const { push } = useHistory();
   const authContext = useContext(AuthContext);
   const resetFormBtnRef = useRef(null);
+
+  useEffect(() => {
+    if(authContext.user) {
+      push("/messenger");
+    }
+  }, [authContext.user, push]);
 
   let validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -58,7 +64,7 @@ const Auth = () => {
     try {
       const res = await axios.post('/auth/register', {username, email, password});
       authContext.login(res.data);
-      history.push("/dashboard");
+      push("/messenger");
     } catch(err) {
       errorMsgHandler(err);
     }
@@ -68,7 +74,7 @@ const Auth = () => {
     try {
       const res = await axios.post('/auth/login', {email, password});
       authContext.login(res.data);
-      history.push("/dashboard");
+      push("/messenger");
     } catch(err) {
       errorMsgHandler(err);
     }
@@ -81,11 +87,6 @@ const Auth = () => {
       setErrorMsg(err.response.data.error.message);
     }
     setOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") return;
-    setOpen(false);
   };
 
   const submissionHandler = async (values, setSubmitting) => {
@@ -172,7 +173,12 @@ const Auth = () => {
           </Box>
           <Box p={1} alignSelf="center" />
         </Box>
-        <PopupMessage open={open} handleClose={handleClose} message={errorMsg} />
+        <PopupMessage 
+          open={open} 
+          handleClose={() => setOpen(false)} 
+          message={errorMsg} 
+          type="error" 
+        />
       </Grid>
     </Grid>
   );

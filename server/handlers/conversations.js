@@ -8,7 +8,7 @@ exports.startConversation = async function (req, res, next) {
         if (!otherUser) {
             throw new Error('That user does not exist');
         }
-        if (currentUser._id.equals(otherUser._id)) {
+        if(currentUser._id == otherUser._id) {
             throw new Error('You cannot start a conversation with yourself');
         }
         const conversation = await db.Conversation.initiateConversation(currentUser, otherUser);
