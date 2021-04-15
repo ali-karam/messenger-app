@@ -175,7 +175,7 @@ const Conversation = ({ onlineUsers }) => {
       <div className={classes.messages}>
         {readAvatar}
         {messagesDisplay}
-        {emojiPickerIsShowing ? emojiSelector : null}
+        {emojiPickerIsShowing && emojiSelector}
       </div>
       <MessageBar
         text={text}

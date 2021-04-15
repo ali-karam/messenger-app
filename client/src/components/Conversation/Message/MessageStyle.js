@@ -36,7 +36,10 @@ const messageStyle = makeStyles((theme) => ({
   messageImg: {
     maxHeight: 300,
     maxWidth: 300,
-    borderRadius: '16px 16px 0'
+    borderRadius: '16px 16px 0',
+    '&:hover': {
+      cursor: 'pointer'
+    }
   },
   avatar: {
     marginRight: 10,
